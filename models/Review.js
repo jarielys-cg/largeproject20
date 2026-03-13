@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-const connection = mongoose.createConnection('mongodb://localhost:27017/Marketplace');
-
 const reviewSchema = new mongoose.Schema({
     businessId: {
         type: mongoose.Schema.Types.ObjectId,
