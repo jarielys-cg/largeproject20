@@ -26,6 +26,9 @@ const businessSchema = new mongoose.Schema({
     phone: {
         type: String
     },
+    websiteLink: {
+        type: String
+    },
     reviewCount: {
         type: Number,
         default: 0
