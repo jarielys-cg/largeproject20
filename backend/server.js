@@ -1,11 +1,12 @@
-require("dotenv").config();
+import dotenv from "dotenv";
+import express from "express";
+import mongoose from "mongoose";
+import userRoutes from "./api/userRoutes.ts";
+import "./models/User.js";
+import "./models/Business.js";
+import "./models/Review.js";
 
-const express = require("express");
-const mongoose = require("mongoose");
-
-const User = require("./models/User");
-const Business = require("./models/Business");
-const Review = require("./models/Review");
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -17,6 +18,11 @@ mongoose.connect(uri)
         console.log("MongoDB connected");
     })
     .catch(err => console.error("MongoDB connection error:", err));
+
+app.use(express.json());
+
+//API's:
+app.use("/signUp", userRoutes);
 
 
 app.listen(port, () => {
