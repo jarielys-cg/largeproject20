@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
-import userRoutes from "./api/userRoutes.ts";
+import userRoutes from "./api/userRoutes.js";
 import "./models/User.js";
 import "./models/Business.js";
 import "./models/Review.js";
@@ -22,7 +22,7 @@ mongoose.connect(uri)
 app.use(express.json());
 
 //API's:
-app.use("/signUp", userRoutes);
+app.use("/api/signUp", userRoutes);
 
 
 app.listen(port, () => {
