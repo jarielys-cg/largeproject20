@@ -22,7 +22,7 @@ mongoose.connect(uri)
 app.use(express.json());
 
 //API's:
-app.use("/api/signUp", userRoutes);
+app.use("/api", userRoutes);
 
 
 app.listen(port, () => {
