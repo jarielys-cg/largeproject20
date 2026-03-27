@@ -12,6 +12,12 @@ export const signUp = async (req: Request, res: Response) =>
         isBusinessOwner
     });
 
+    const existingUser = await User.findOne({ email: newUser.email });
+    if (existingUser) 
+    {
+        return res.status(400).json({ error: "Email already exists" });
+    }
+
     try 
     {
         const savedUser = await newUser.save(); // saves to MongoDB
@@ -19,6 +25,6 @@ export const signUp = async (req: Request, res: Response) =>
     } 
     catch (err) 
     {
-        //res.status(400).json({ error: err.message }); // handle errors (like duplicate email)
+        return res.status(400).json({ error: "Error adding to database" });
     }
 };
