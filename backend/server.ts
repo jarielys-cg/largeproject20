@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import userRoutes from "./api/userRoutes.js";
+import businessRoutes from "./api/businessRoutes.js";
 import "./models/User.js";
 import "./models/Business.js";
 import "./models/Review.js";
@@ -23,6 +24,7 @@ app.use(express.json());
 
 //API's:
 app.use("/api", userRoutes);
+app.use("/api/business", businessRoutes);
 
 
 app.listen(port, () => {
