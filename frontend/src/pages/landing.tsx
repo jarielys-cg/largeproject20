@@ -1,15 +1,13 @@
-import LoginModal from '../components/forms/loginModal'
 import { useState } from 'react'
+import LoginModal from '../components/forms/loginModal'
+import Navbar from '../components/Navbar'
 
 function Landing() {
-    const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   return (
-    <div className = "text-center">
-      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => setIsModalOpen(true)}>
-        Login
-      </button>
-
+    <div className="min-h-screen bg-bm-gray">
+      <Navbar onLoginClick={() => setIsModalOpen(true)} />
       <LoginModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   )
