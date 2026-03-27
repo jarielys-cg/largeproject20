@@ -1,8 +1,16 @@
+import { Routes, Route } from 'react-router'
 import Landing from './pages/landing'
-import './index.css'
+import UserSignUp from './pages/userSignUp'
 
 function App() {
-  return(<Landing />)
+  return (
+  
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/signup" element={<UserSignUp />} />
+      </Routes>
+   
+  )
 }
 
 export default App
