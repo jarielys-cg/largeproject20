@@ -18,6 +18,9 @@ const userSchema = new mongoose.Schema({
     isBusinessOwner: {
         type: Boolean,
         default: false
+    },
+    zipCode: {
+        type: Number
     }
 });
 
