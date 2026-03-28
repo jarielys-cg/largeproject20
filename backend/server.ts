@@ -5,6 +5,7 @@ import userRoutes from "./api/userRoutes.js";
 import "./models/User.js";
 import "./models/Business.js";
 import "./models/Review.js";
+import cors from "cors";
 
 dotenv.config();
 
@@ -18,8 +19,9 @@ mongoose.connect(uri)
         console.log("MongoDB connected");
     })
     .catch(err => console.error("MongoDB connection error:", err));
-
+//middleware
 app.use(express.json());
+app.use(cors())
 
 //API's:
 app.use("/api", userRoutes);
