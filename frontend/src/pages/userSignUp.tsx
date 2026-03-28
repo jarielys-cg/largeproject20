@@ -1,34 +1,47 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import type { SignUpForm } from '../types'
 import logo from '../assets/logo.png'
+import toast from "react-hot-toast"
+import api from "../lib/axios"
 
 const UserSignUp = () => {
   const [form, setForm] = useState<SignUpForm>({
-    firstName: '', lastName: '', email: '',
-    password: '', zipCode: '', role: 'user'
+    firstName: '',
+    lastName: '',
+    username: '',
+    email: '',
+    password: '',
+    zipCode: '',
+    isBusinessOwner: false
   })
-  const [success, setSuccess] = useState(false)
-
+  
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
+    const { name, value, type, checked } = e.target
+    setForm(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSuccess(true)
+    setLoading(true)
+    try {
+      await api.post('/signup', form)
+      toast.success(`Welcome to BizMart, ${form.username}!`,{duration: 10000})
+      navigate('/')  // redirect to home after signup
+    } catch (error) {
+      console.log("Error creating account", error)
+      toast.error("Failed to create account. Try again")
+    } finally {
+      setLoading(false)
+    }
   }
 
-  if (success) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center p-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Check your email</h2>
-          <p className="text-gray-500">We sent a verification link to <strong>{form.email}</strong></p>
-        </div>
-      </div>
-    )
-  }
+
 
   return (
     <div className="min-h-screen flex">
@@ -44,8 +57,7 @@ const UserSignUp = () => {
           <p className="text-red-100 text-sm leading-relaxed">Discover restaurants, shops, services, and more.</p>
         </div>
         <div className="flex gap-8">
-          <div><div className="text-2xl font-bold">50K+</div><div className="text-red-200 text-xs mt-1">Businesses</div></div>
-          <div><div className="text-2xl font-bold">2M+</div><div className="text-red-200 text-xs mt-1">Reviews</div></div>
+          
         </div>
       </div>
 
@@ -81,6 +93,12 @@ const UserSignUp = () => {
             </div>
 
             <div>
+              <label className="block text-xs font-medium text-gray-600 uppercase tracking-wide mb-1">Username</label>
+              <input name="username" type="text" required onChange={handleChange}
+                className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-bm-coral bg-white" />
+            </div>
+
+            <div>
               <label className="block text-xs font-medium text-gray-600 uppercase tracking-wide mb-1">Email address</label>
               <input name="email" type="email" required onChange={handleChange}
                 className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-bm-coral bg-white" />
@@ -94,13 +112,12 @@ const UserSignUp = () => {
 
             <div>
               <label className="block text-xs font-medium text-gray-600 uppercase tracking-wide mb-1">ZIP code</label>
-              <input name="zipCode" type="text" required maxLength={5} onChange={handleChange}
-                className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-bm-coral bg-white" />
+              <input name="zipCode" type="text" required pattern="\d{5}" maxLength={5} title="ZIP code must be exactly 5 digits" onKeyPress={(e) => { if (!/[0-9]/.test(e.key)) e.preventDefault()}} onChange={handleChange} className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-bm-coral bg-white" />
             </div>
 
-            <button type="submit"
-              className="w-full h-12 bg-bm-coral hover:bg-bm-coral-dark text-white font-semibold rounded-lg transition-colors">
-              Create account
+            <button type="submit" disabled={loading}
+              className="w-full h-12 bg-bm-coral hover:bg-bm-coral-dark text-white font-semibold rounded-lg transition-colors disabled:opacity-60">
+              {loading ? 'Creating account...' : 'Create account'}
             </button>
           </form>
         </div>

@@ -16,8 +16,9 @@ export interface AuthResponse {
 export interface SignUpForm {
   firstName: string
   lastName: string
+  username: string
   email: string
   password: string
   zipCode: string
-  role: 'user' | 'business_owner'
+  isBusinessOwner: boolean
 }
