@@ -1,4 +1,3 @@
-// src/types/index.ts
 export interface User {
   _id: string
   firstName: string
@@ -21,4 +20,24 @@ export interface SignUpForm {
   password: string
   zipCode: string
   isBusinessOwner: boolean
+}
+
+export interface BusinessForm {
+  // Step 1
+  businessName: string
+  category: string
+  phone: string
+  // Step 2
+  address: string
+  city: string
+  zipCode: string
+  // Step 3
+  ownerName: string
+  email: string
+  password: string
+}
+
+export interface BusinessSignUpModalProps {
+  isOpen: boolean
+  onClose: () => void
 }

@@ -2,6 +2,7 @@ import { BriefcaseBusinessIcon, ChevronDown, LogInIcon, Search } from "lucide-re
 import logo from '../assets/logo.png'
 import { useNavigate } from 'react-router'
 import { useEffect, useRef, useState } from "react"
+import BusinessSignUpModal from "./forms/BusinessSignUpModal"
 
 interface NavbarProps {
   onLoginClick?: () => void
@@ -10,6 +11,7 @@ interface NavbarProps {
 const Navbar = ({ onLoginClick }: NavbarProps) => {
   const navigate = useNavigate()
   const [bizDropdownOpen, setBizDropdownOpen] = useState(false)
+  const [bizModalOpen, setBizModalOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
    // Close dropdown when clicking outside
   useEffect(() => {
@@ -68,7 +70,7 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
           {bizDropdownOpen && (
             <div className="absolute top-full right-0 mt-2 w-52 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
               <button
-                onClick={() => { navigate('/business/signup'); setBizDropdownOpen(false) }}
+                onClick={() => { setBizModalOpen(true); setBizDropdownOpen(false) }}
                 className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-bm-gray hover:text-bm-coral transition-colors text-left"
               >
                 <BriefcaseBusinessIcon size={16} color="currentColor"/>
@@ -101,8 +103,9 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
         >
           Sign Up
         </button>
+          
       </div>
-
+       <BusinessSignUpModal isOpen={bizModalOpen} onClose={() => setBizModalOpen(false)} />
     </nav>
   )
 }
