@@ -26,20 +26,20 @@ const UserSignUp = () => {
     }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    try {
-      await api.post('/signup', form)
-      toast.success(`Welcome to BizMart, ${form.username}!`,{duration: 10000})
-      navigate('/')  // redirect to home after signup
-    } catch (error) {
-      console.log("Error creating account", error)
-      toast.error("Failed to create account. Try again")
-    } finally {
-      setLoading(false)
-    }
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setLoading(true)
+  try {
+    await api.post('/signup', form)
+    toast.success(`Welcome to BizMart, ${form.username}!`, { duration: 10000 })
+    navigate('/')
+  } catch (error: any) {
+    const message = error.response?.data?.error || 'Failed to create account. Try again'
+    toast.error(message, { duration: 5000 })
+  } finally {
+    setLoading(false)
   }
+}
 
 
 
