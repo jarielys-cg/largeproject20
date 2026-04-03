@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import User from "../models/User.js";
+import jwt from "jsonwebtoken";
 
 export const login = async (req: Request, res: Response) => 
 {
@@ -10,7 +11,16 @@ export const login = async (req: Request, res: Response) =>
     {
         if(existingUser.password == password)
         {
-            res.status(201).json(existingUser); 
+            const token = jwt.sign(
+                { userId: existingUser._id, email: existingUser.email },
+                process.env.JWT_SECRET!,
+                { expiresIn: "24h" }
+            )       
+             
+            return res.status(200).json({
+                token,
+                existingUser
+            });
         }
         else
         {
