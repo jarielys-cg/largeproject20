@@ -3,19 +3,27 @@ import User from "../models/User.js";
 
 export const signUp = async (req: Request, res: Response) => 
 {
-    const { username, email, password, isBusinessOwner } = req.body;
+    const { firstName, lastName, username, email, password, isBusinessOwner, zipCode } = req.body;
 
     const newUser = new User({
+        firstName,
+        lastName,
         username,
         email,
         password,
-        isBusinessOwner
+        isBusinessOwner,
+        zipCode
     });
 
     const existingUser = await User.findOne({ email: newUser.email });
-    if (existingUser) 
+    if (existingUser)
     {
         return res.status(400).json({ error: "Email already exists" });
+    }
+    const existingUser2 = await User.findOne({ username: newUser.username });
+    if (existingUser2)
+    {
+        return res.status(400).json({ error: "Username already exists" });
     }
 
     try 
@@ -25,6 +33,7 @@ export const signUp = async (req: Request, res: Response) =>
     } 
     catch (err) 
     {
+        console.log("DB ERROR:", err);
         return res.status(400).json({ error: "Error adding to database" });
     }
 };
