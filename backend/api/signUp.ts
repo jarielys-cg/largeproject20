@@ -20,8 +20,8 @@ export const signUp = async (req: Request, res: Response) =>
 
     try 
     {
-        const savedUser = await newUser.save(); // saves to MongoDB
-        res.status(201).json(savedUser);       // respond with the saved user
+        const savedUser = await newUser.save();
+        res.status(201).json(savedUser);
     } 
     catch (err) 
     {

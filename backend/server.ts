@@ -22,7 +22,6 @@ mongoose.connect(uri)
 
 app.use(express.json());
 
-//API's:
 app.use("/api", userRoutes);
 app.use("/api/business", businessRoutes);
 
