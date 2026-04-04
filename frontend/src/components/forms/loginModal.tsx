@@ -23,7 +23,8 @@ const LoginModal = ({isOpen,onClose}: LoginModalProps) =>
     setLoading(true)
     try {
       const res = await api.post('/login', form)
-      toast.success(`Hello ${res.data.username}`)
+      console.log(res.data)
+      toast.success(`Hello ${res.data.user.username}`)
       localStorage.setItem("token", res.data.token)
     }
     catch (err: any) {

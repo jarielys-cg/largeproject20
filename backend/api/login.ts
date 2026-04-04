@@ -11,6 +11,13 @@ export const login = async (req: Request, res: Response) =>
     {
         if(existingUser.password == password)
         {
+            const user = new User({
+                _id: existingUser._id,
+                username: existingUser.username,
+                email: existingUser.email,
+                isBusinessOwner: existingUser.isBusinessOwner
+            })
+
             const token = jwt.sign(
                 { userId: existingUser._id, email: existingUser.email },
                 process.env.JWT_SECRET!,
@@ -19,7 +26,7 @@ export const login = async (req: Request, res: Response) =>
              
             return res.status(200).json({
                 token,
-                existingUser
+                user
             });
         }
         else
