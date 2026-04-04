@@ -26,6 +26,7 @@ const LoginModal = ({isOpen,onClose}: LoginModalProps) =>
       console.log(res.data)
       toast.success(`Hello ${res.data.user.username}`)
       localStorage.setItem("token", res.data.token)
+      onClose()
     }
     catch (err: any) {
       const message = err.response?.data?.error || 'Incorrect email or password'
