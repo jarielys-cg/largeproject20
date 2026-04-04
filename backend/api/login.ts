@@ -11,16 +11,21 @@ export const login = async (req: Request, res: Response) =>
     {
         if(existingUser.password == password)
         {
-            const user = new User({
+            const user = {
                 _id: existingUser._id,
                 username: existingUser.username,
                 email: existingUser.email,
                 isBusinessOwner: existingUser.isBusinessOwner
-            })
+            }
+
+            const jwtSecret = process.env.JWT_SECRET
+            if(!jwtSecret) {
+                return res.status(500).json({ error: "JWT secret is not configured" })
+            }
 
             const token = jwt.sign(
-                { userId: existingUser._id, email: existingUser.email },
-                process.env.JWT_SECRET!,
+                { userId: existingUser._id },
+                jwtSecret,
                 { expiresIn: "24h" }
             )       
              
