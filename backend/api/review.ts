@@ -1,6 +1,6 @@
 import { Router } from "express";
-import Review from "../models/Review";
-import Business from "../models/Business";
+import Review from "../models/Review.js";
+import Business from "../models/Business.js";
 
 const router = Router();
 
@@ -11,7 +11,7 @@ const updateBusinessRating = async (businessId: string) => {
   let averageReviewScore = 0;
 
   if (reviewCount > 0) {
-    const total = reviews.reduce((sum, r) => sum + r.rating, 0);
+    const total = reviews.reduce((sum: number, r: any) => sum + r.rating, 0);
     averageReviewScore = total / reviewCount;
   }
 
@@ -26,6 +26,14 @@ router.post("/", async (req, res) => {
   try {
     const { businessId, userId, rating, review } = req.body;
 
+    if (!businessId || !userId || !rating || !review) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({ message: "Rating must be between 1 and 5" });
+    }
+
     const newReview = await Review.create({
       businessId,
       userId,
@@ -35,19 +43,19 @@ router.post("/", async (req, res) => {
 
     await updateBusinessRating(businessId);
 
-    res.json(newReview);
+    return res.status(201).json(newReview);
   } catch (err: any) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
 });
 
-// GET REVIEWS
+// GET REVIEWS FOR ONE BUSINESS
 router.get("/business/:businessId", async (req, res) => {
   try {
     const reviews = await Review.find({ businessId: req.params.businessId });
-    res.json(reviews);
+    return res.json(reviews);
   } catch (err: any) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
 });
 
@@ -56,17 +64,27 @@ router.put("/:id", async (req, res) => {
   try {
     const review = await Review.findById(req.params.id);
 
-    if (!review) return res.status(404).json({ message: "Not found" });
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
 
-    review.rating = req.body.rating ?? review.rating;
-    review.review = req.body.review ?? review.review;
+    if (req.body.rating !== undefined) {
+      if (req.body.rating < 1 || req.body.rating > 5) {
+        return res.status(400).json({ message: "Rating must be between 1 and 5" });
+      }
+      review.rating = req.body.rating;
+    }
+
+    if (req.body.review !== undefined) {
+      review.review = req.body.review;
+    }
 
     await review.save();
     await updateBusinessRating(review.businessId.toString());
 
-    res.json(review);
+    return res.json(review);
   } catch (err: any) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
 });
 
@@ -75,16 +93,18 @@ router.delete("/:id", async (req, res) => {
   try {
     const review = await Review.findById(req.params.id);
 
-    if (!review) return res.status(404).json({ message: "Not found" });
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
 
-    const businessId = review.businessId;
+    const businessId = review.businessId.toString();
 
     await Review.findByIdAndDelete(req.params.id);
-    await updateBusinessRating(businessId.toString());
+    await updateBusinessRating(businessId);
 
-    res.json({ message: "Deleted" });
+    return res.json({ message: "Review deleted successfully" });
   } catch (err: any) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
 });
 
