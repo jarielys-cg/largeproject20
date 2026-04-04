@@ -1,4 +1,4 @@
-import { BriefcaseBusinessIcon, ChevronDown, LogInIcon, Search } from "lucide-react"
+import { BriefcaseBusinessIcon, ChevronDown, LogInIcon } from "lucide-react"
 import logo from '../assets/logo.png'
 import { useNavigate } from 'react-router'
 import { useEffect, useRef, useState } from "react"
@@ -25,7 +25,7 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
   }, [])
 
   return (
-    <nav className="w-full bg-white border-b border-gray-200 px-6 py-6 flex items-center gap-4">
+    <nav className="w-full bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-4 relative z-10">
 
       {/* Logo */}
       <div className="flex items-center gap-2 cursor-pointer shrink-0" onClick={() => navigate('/')}>
@@ -33,24 +33,6 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
         <span className="text-lg font-bold text-bm-dark">
           Biz<span className="text-bm-coral">Mart</span>
         </span>
-      </div>
-
-      {/* Search bar */}
-      <div className="flex flex-1 max-w-2xl border border-gray-300 rounded-lg overflow-hidden">
-        <input
-          type="text"
-          placeholder="things to do, restaurants, auto-service"
-          className="flex-1 px-4 py-2 text-m focus:outline-none"
-        />
-        <div className="w-px bg-gray-300"></div>
-        <input
-          type="text"
-          placeholder="Location"
-          className="w-36 px-4 py-2 text-m focus:outline-none"
-        />
-        <button className="bg-bm-coral hover:bg-bm-coral-dark px-4 flex items-center justify-center transition-colors">
-          <Search size={16} color="white" strokeWidth={2.5} />
-        </button>
       </div>
 
       {/* Right side */}
