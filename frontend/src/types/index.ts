@@ -41,3 +41,13 @@ export interface BusinessSignUpModalProps {
   isOpen: boolean
   onClose: () => void
 }
+
+export interface LoginForm {
+  email: string
+  password: string
+}
+
+export interface LoginModalProps {
+  isOpen: boolean
+  onClose: () => void
+}

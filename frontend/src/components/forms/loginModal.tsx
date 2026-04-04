@@ -1,12 +1,45 @@
 import logo from '../../assets/logo.png'
-function LoginModal({
-  isOpen,
-  onClose,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-}) {
-  if (!isOpen) return null;
+import { useState } from 'react'
+import { type LoginForm, type LoginModalProps } from "../../types";
+import api from '../../lib/axios';
+import toast from 'react-hot-toast';
+
+const LoginModal = ({isOpen,onClose}: LoginModalProps) =>  
+{
+  const [loading, setLoading] = useState(false)
+  const [form, setForm] = useState<LoginForm>({
+    email: '', 
+    password: ''
+  })
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setForm(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      const res = await api.post('/login', form)
+      toast.success(`Hello ${res.data.user.username}`)
+      if(res.data.token) {
+        localStorage.setItem("token", res.data.token)
+      }
+      onClose()
+    }
+    catch (err: any) {
+      const message = err.response?.data?.error || 'Incorrect email or password'
+      toast.error(message, {duration: 5000})
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (!isOpen) return null
+
 
   return (
     <div
@@ -19,7 +52,7 @@ function LoginModal({
       >
         <button
           onClick={onClose}
-          className="self-end text-bm-coral hover:text-bm-coral-dark font-bold"
+          className="self-end text-bm-coral hover:text-bm-coral-dark font-bold cursor-pointer"
         >
           ✕
         </button>
@@ -28,10 +61,12 @@ function LoginModal({
           <img src={logo} alt="BizMart logo" className="w-16 h-16 mb-2" />
           <h2 className="text-xl font-bold">Sign In to BizMart</h2>
         </div>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="flex flex-col mb-4 text-left">
             <label htmlFor="email">Email:</label>
             <input
+              onChange={handleChange}
+              value={form.email}
               placeholder="Email"
               type="email"
               id="email"
@@ -42,6 +77,8 @@ function LoginModal({
           <div className="flex flex-col mb-4 text-left">
             <label htmlFor="password">Password:</label>
             <input
+              onChange={handleChange}
+              value={form.password}
               placeholder="Password"
               type="password"
               id="password"
@@ -56,9 +93,9 @@ function LoginModal({
           </div>
           <button
             type="submit"
-            className="w-full bg-bm-coral hover:bg-bm-coral-dark text-white font-bold py-2 px-10 rounded mb-3 mt-1"
-          >
-            Login
+            disabled={loading}
+            className="w-full bg-bm-coral hover:bg-bm-coral-dark text-white font-bold py-2 px-10 rounded mb-3 mt-1">
+            {loading ? 'Logging in..' : 'Login'}
           </button>
         </form>
         <p>
