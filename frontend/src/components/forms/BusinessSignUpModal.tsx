@@ -47,8 +47,9 @@ const BusinessSignUpModal = ({ isOpen, onClose }: BusinessSignUpModalProps) => {
         address: '', city: '', zipCode: '',
         ownerName: '', email: '', password: ''
       })
-    } catch (error) {
-      toast.error('Failed to register business. Try again.')
+    } catch (err: any) {
+      const message = err.response?.data?.error || 'Failed to register business. Try again.'
+      toast.error(message, { duration: 5000 })
     } finally {
       setLoading(false)
     }
@@ -84,7 +85,7 @@ const BusinessSignUpModal = ({ isOpen, onClose }: BusinessSignUpModalProps) => {
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors
                     ${step > i + 1 ? 'bg-white text-bm-coral' :
                       step === i + 1 ? 'bg-white text-bm-coral' :
-                      'bg-white/30 text-white'}`}>
+                        'bg-white/30 text-white'}`}>
                     {step > i + 1 ? '✓' : i + 1}
                   </div>
                   <span className={`text-xs whitespace-nowrap ${step === i + 1 ? 'text-white font-medium' : 'text-white/60'}`}>
