@@ -47,7 +47,7 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
               onClick={() => setBizDropdownOpen(prev => !prev)}
               className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-bm-coral whitespace-nowrap transition-colors"
             >
-              For Businesses
+              For Business
               <ChevronDown size={16} strokeWidth={2} className={`transition-transform ${bizDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
 
@@ -73,7 +73,7 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
             )}
           </div>
 
-          <button className="text-m font-medium text-gray-700 hover:text-bm-coral whitespace-nowrap">
+          <button onClick={() => navigate('/write-review')} className="text-m font-medium text-gray-700 hover:text-bm-coral whitespace-nowrap">
             Write a Review
           </button>
 
