@@ -1,11 +1,15 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import {  useNavigate } from 'react-router'
 import type { SignUpForm } from '../types'
 import logo from '../assets/logo.png'
 import toast from "react-hot-toast"
 import api from "../lib/axios"
 
-const UserSignUp = () => {
+interface UserSignUpProps{
+  onLoginClick?: () => void
+}
+
+const UserSignUp = ({onLoginClick}: UserSignUpProps) => {
   const [form, setForm] = useState<SignUpForm>({
     firstName: '',
     lastName: '',
@@ -48,15 +52,15 @@ const handleSubmit = async (e: React.FormEvent) => {
 
       {/* Left panel */}
       <div className="hidden lg:flex w-5/12 bg-bm-coral flex-col justify-between p-12 text-white">
-        <div className="flex items-center gap-2">
-          <img src={logo} alt="BizMart logo" className="w-10 h-10" />
-          <span className="text-xl font-bold">BizMart</span>
-        </div>
-        <div>
+         <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
+            <img src={logo} alt="BizMart logo" className="w-10 h-10" />
+            <span className="text-xl font-bold">BizMart</span>
+         </div>
+         <div>
           <h2 className="text-4xl font-bold leading-tight mb-4">Find the best local businesses near you.</h2>
           <p className="text-red-100 text-sm leading-relaxed">Discover restaurants, shops, services, and more.</p>
-        </div>
-        <div className="flex gap-8">
+         </div>
+          <div className="flex gap-8">
           
         </div>
       </div>
@@ -75,9 +79,8 @@ const handleSubmit = async (e: React.FormEvent) => {
 
           <h1 className="text-3xl font-bold text-gray-900 mb-1">Create your account</h1>
           <p className="text-gray-500 text-sm mb-8">
-            Already have one? <Link to="/login" className="text-bm-coral font-medium">Sign in</Link>
+            Already have one? <button type = "button" onClick={onLoginClick} className="text-bm-coral font-medium hover:underline">Sign in</button>
           </p>
-
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
