@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router'
-import LoginModal from '../components/forms/loginModal'
 import Navbar from '../components/Navbar'
 import { UtensilsCrossed, ShoppingBag, Scissors, Car, Home, MoreHorizontal } from 'lucide-react'
 import Restaurant from '../assets/images/Restaurant.jpg'
@@ -35,8 +34,11 @@ const CATEGORIES = [
   { label: 'More', icon: MoreHorizontal },
 ]
 
-function Landing() {
-  const [isModalOpen, setIsModalOpen] = useState(false)
+interface LandingProps{
+  onLoginClick?: () => void
+}
+
+function Landing({ onLoginClick}: LandingProps) {
   const [current, setCurrent] = useState(0)
   const navigate = useNavigate()
 
@@ -50,7 +52,7 @@ function Landing() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar onLoginClick={() => setIsModalOpen(true)} />
+      <Navbar onLoginClick={onLoginClick} />
 
       {/* Hero section */}
       <div className="relative w-full h-130 overflow-hidden">
@@ -177,8 +179,6 @@ function Landing() {
           </div>
         </div>
 
-
-      <LoginModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   )
 }
