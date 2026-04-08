@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import userRoutes from "./api/userRoutes.js";
+import businessRoutes from "./api/businessRoutes.js";
 import reviewRoutes from "./api/review.js";
 import "./models/User.js";
 import "./models/Business.js";
@@ -27,6 +28,7 @@ app.use(cors())
 //API's:
 app.use("/api", userRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api", businessRoutes);
 
 
 app.listen(port, () => {
