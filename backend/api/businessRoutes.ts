@@ -5,7 +5,7 @@ import { editB } from "./editB.js";
 import { removeB } from "./removeB.js";
 
 router.post("/addB", addB);
-router.post("/editB", editB);
+router.patch("/editB", editB);
 router.delete("/removeB", removeB);
 
 export default router;
