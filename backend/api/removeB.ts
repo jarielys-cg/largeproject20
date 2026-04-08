@@ -5,6 +5,10 @@ import mongoose from "mongoose";
 export const removeB = async (req: Request, res: Response) => 
 {
     const { name, ownerId } = req.body;
+    if(!mongoose.isValidObjectId(ownerId))
+    {
+        return res.status(400).json({ error: "Invalid ID" });
+    }
     const ownerObjectId = new mongoose.Types.ObjectId(ownerId);
 
     const existingBusiness = await Business.findOne({ ownerId: ownerObjectId, name: name });

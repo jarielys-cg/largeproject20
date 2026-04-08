@@ -5,6 +5,11 @@ import mongoose from "mongoose";
 export const addB = async (req: Request, res: Response) => 
 {
     const { name, ownerId, category, description, image, address, phone, websiteLink,  } = req.body;
+
+    if(!mongoose.isValidObjectId(ownerId))
+    {
+        return res.status(400).json({ error: "Invalid ID" });
+    }
     const ownerObjectId = new mongoose.Types.ObjectId(ownerId);
 
     const newBusiness = new Business({

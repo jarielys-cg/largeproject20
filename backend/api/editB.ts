@@ -5,6 +5,10 @@ import mongoose from "mongoose";
 export const editB = async (req: Request, res: Response) => 
 {
     const { name, ownerId, newName, category, description, image, address, phone, websiteLink,  } = req.body;
+    if(!mongoose.isValidObjectId(ownerId))
+    {
+        return res.status(400).json({ error: "Invalid ID" });
+    }
     const ownerObjectId = new mongoose.Types.ObjectId(ownerId);
 
     const existingBusiness = await Business.findOne({ ownerId: ownerObjectId, name: name });
