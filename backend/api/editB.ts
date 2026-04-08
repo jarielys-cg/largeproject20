@@ -15,7 +15,7 @@ export const editB = async (req: Request, res: Response) =>
 
     const params = { newName, category, description, image, address, phone, websiteLink };
 
-    let updateData: Record<string, string> = {};
+    const updateData: Record<string, string> = {};
     Object.entries(params).forEach(([key, value]) => 
     {
         if (value !== undefined) 
@@ -41,7 +41,7 @@ export const editB = async (req: Request, res: Response) =>
         const savedBusiness = await existingBusiness.save();
         res.status(200).json(savedBusiness);
     } 
-    catch (err) 
+    catch (_err) 
     {
         return res.status(400).json({ error: "Error updating business" });
     }

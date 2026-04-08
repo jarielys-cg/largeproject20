@@ -29,9 +29,8 @@ export const addB = async (req: Request, res: Response) =>
         const savedB = await newBusiness.save(); // saves to MongoDB
         res.status(201).json(savedB);       // respond with the saved user
     } 
-    catch (err) 
+    catch (_err) 
     {
-        console.log("DB ERROR:", err);
         return res.status(400).json({ error: "Error adding to database" });
     }
 }
