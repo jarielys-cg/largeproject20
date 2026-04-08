@@ -1,13 +1,15 @@
 import type { Request, Response } from "express";
 import Business from "../models/Business.js";
+import mongoose from "mongoose";
 
 export const addB = async (req: Request, res: Response) => 
 {
     const { name, ownerId, category, description, image, address, phone, websiteLink,  } = req.body;
+    const ownerObjectId = new mongoose.Types.ObjectId(ownerId);
 
     const newBusiness = new Business({
         name,
-        ownerId,
+        ownerId: ownerObjectId,
         category,
         description,
         image,
@@ -29,6 +31,7 @@ export const addB = async (req: Request, res: Response) =>
     } 
     catch (err) 
     {
+        console.log("DB ERROR:", err);
         return res.status(400).json({ error: "Error adding to database" });
     }
 }

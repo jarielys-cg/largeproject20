@@ -1,31 +1,45 @@
 import type { Request, Response } from "express";
 import Business from "../models/Business.js";
+import mongoose from "mongoose";
 
 export const editB = async (req: Request, res: Response) => 
 {
     const { name, ownerId, newName, category, description, image, address, phone, websiteLink,  } = req.body;
+    const ownerObjectId = new mongoose.Types.ObjectId(ownerId);
 
-    const existingBusiness = await Business.findOne({ ownerId: ownerId, name: name });
+    const existingBusiness = await Business.findOne({ ownerId: ownerObjectId, name: name });
     if(!existingBusiness)
     {
         return res.status(400).json({ error: "Error business not found" });
     }
 
-    const params = { name, ownerId, newName, category, description, image, address, phone, websiteLink };
+    const params = { newName, category, description, image, address, phone, websiteLink };
 
     let updateData: Record<string, string> = {};
     Object.entries(params).forEach(([key, value]) => 
     {
         if (value !== undefined) 
         {
-            updateData[key] = value;
+            if (key === "newName") 
+            {
+                updateData["name"] = value;
+            } 
+            else 
+            {
+                updateData[key] = value;
+            }
         }
     });
 
     try 
     {
-        const savedB = await existingBusiness.updateOne(updateData);
-        res.status(201).json(savedB);
+        Object.entries(updateData).forEach(([key, value]) => 
+        {
+            (existingBusiness as any)[key] = value;
+        });
+
+        const savedBusiness = await existingBusiness.save();
+        res.status(200).json(savedBusiness);
     } 
     catch (err) 
     {
