@@ -15,7 +15,7 @@ export const removeB = async (req: Request, res: Response) =>
             await existingBusiness.deleteOne();
             res.status(200).json({ success: "Successfully deleted" });
         } 
-        catch (_err) 
+        catch
         {
             return res.status(400).json({ error: "Error deleting business" });
         }
