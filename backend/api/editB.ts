@@ -10,7 +10,7 @@ export const editB = async (req: Request, res: Response) =>
     const existingBusiness = await Business.findOne({ ownerId: ownerObjectId, name: name });
     if(!existingBusiness)
     {
-        return res.status(400).json({ error: "Error business not found" });
+        return res.status(404).json({ error: "Business not found" });
     }
 
     const params = { newName, category, description, image, address, phone, websiteLink };
