@@ -6,6 +6,6 @@ import { removeB } from "./removeB.js";
 
 router.post("/addB", addB);
 router.post("/editB", editB);
-router.post("/removeB", removeB);
+router.delete("/removeB", removeB);
 
 export default router;
