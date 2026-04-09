@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import { Search, Store } from 'lucide-react'
 import api from '../lib/axios'
 import review from '../assets/images/OnlineReview.png'
+import feedbackIllustration from '../assets/images/feedbackIllustration.png'
 import type { Business } from "../types"
 
 interface WriteReviewProps {
@@ -48,7 +49,7 @@ const WriteReview = ({ onLoginClick }: WriteReviewProps) => {
             <form onSubmit={handleSearch} className="flex border border-gray-300 rounded-lg overflow-hidden mb-10">
               <input
                 type="text"
-                placeholder="Try lunch, yoga studio, plumber"
+                placeholder="Try ramen, spin studio, locksmith"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="flex-1 px-4 py-3 text-sm focus:outline-none"
@@ -132,7 +133,7 @@ const WriteReview = ({ onLoginClick }: WriteReviewProps) => {
               ) : (
                 // No results
                 <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <div className="text-5xl mb-4">👍⭐</div>
+                  <img src={feedbackIllustration} alt="No results" className="w-48 mb-4" />
                   <h2 className="text-lg font-bold text-gray-900 mb-2">No results found</h2>
                   <p className="text-gray-400 text-sm max-w-xs">
                     We couldn't find any businesses matching "{search}". Try a different search.
