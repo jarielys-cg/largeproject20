@@ -1,13 +1,15 @@
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
+
 import userRoutes from "./api/userRoutes.js";
 import businessRoutes from "./api/businessRoutes.js";
 import reviewRoutes from "./api/review.js";
+
 import "./models/User.js";
 import "./models/Business.js";
 import "./models/Review.js";
-import cors from "cors";
 
 dotenv.config();
 
@@ -21,6 +23,7 @@ mongoose.connect(uri)
         console.log("MongoDB connected");
     })
     .catch(err => console.error("MongoDB connection error:", err));
+
 //middleware
 app.use(express.json());
 app.use(cors())
@@ -29,7 +32,6 @@ app.use(cors())
 app.use("/api", userRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api", businessRoutes);
-
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
