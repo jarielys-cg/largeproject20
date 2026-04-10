@@ -30,6 +30,8 @@ const userSchema = new mongoose.Schema({
     zipCode: {
         type: Number
     }
+}, {
+    timestamps: true
 });
 
 const User = mongoose.model("User", userSchema);
