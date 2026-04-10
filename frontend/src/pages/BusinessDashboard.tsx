@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import api from '../lib/axios'
-
 import { ImagePlus, MessageSquare, Pencil, Plus, Star } from 'lucide-react'
+import toast from 'react-hot-toast'
 import type { Business } from '../types'
 import BusinessNavbar from "../components/Business/BusinessNavbar"
 import BusinessSidebar from "../components/Business/BusinessSidebar"
@@ -56,6 +56,7 @@ const BusinessDashboard = () => {
         }
       } catch {
         setBusinesses([])
+        toast.error('Failed to load your businesses. Please refresh.')
       } finally {
         setBusinessesLoading(false)
       }
@@ -72,6 +73,7 @@ const BusinessDashboard = () => {
         setReviewStats(res.data)
       } catch {
         setReviewStats({ count: 0, avgRating: 0 })
+        toast.error('Failed to load review stats.')
       } finally {
         setStatsLoading(false)
       }
@@ -92,7 +94,9 @@ const BusinessDashboard = () => {
       setActiveBusiness(res.data)
       setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
       setEditingName(false)
+      toast.success('Business name updated.')
     } catch {
+      toast.error('Failed to save business name. Please try again.')
     } finally {
       setSavingName(false)
     }
@@ -106,7 +110,9 @@ const BusinessDashboard = () => {
       setActiveBusiness(res.data)
       setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
       setEditingWebsite(false)
+      toast.success('Website updated.')
     } catch {
+      toast.error('Failed to save website. Please try again.')
     } finally {
       setSavingWebsite(false)
     }
@@ -119,6 +125,7 @@ const BusinessDashboard = () => {
       setActiveBusiness(res.data)
       setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
     } catch {
+      toast.error('Failed to add category. Please try again.')
     }
   }
 
@@ -129,6 +136,7 @@ const BusinessDashboard = () => {
       setActiveBusiness(res.data)
       setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
     } catch {
+      toast.error('Failed to remove category. Please try again.')
     }
   }
 
@@ -143,7 +151,9 @@ const BusinessDashboard = () => {
       })
       setActiveBusiness(res.data)
       setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
+      toast.success('Photo uploaded successfully.')
     } catch {
+      toast.error('Failed to upload photo. Please try again.')
     } finally {
       setUploadingPhoto(false)
     }
@@ -156,6 +166,7 @@ const BusinessDashboard = () => {
       setActiveBusiness(res.data)
       setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
     } catch {
+      toast.error('Failed to remove photo. Please try again.')
     }
   }
 
