@@ -53,3 +53,15 @@ export interface LoginModalProps {
   onClose: () => void
   defaultBusinessOwner?: boolean
 }
+
+export interface Business {
+  _id: string
+  name: string
+  address: string
+  city: string
+  state: string
+  zipCode: string
+  category: string[]
+  photos: string[]
+  website?: string
+}

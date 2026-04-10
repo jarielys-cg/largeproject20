@@ -5,6 +5,7 @@ import UserSignUp from './pages/userSignUp'
 import LoginModal from './components/forms/loginModal'
 import WriteReview from "./pages/WriteReview"
 import ReviewForm from "./pages/ReviewForm"
+import BusinessDashboard from "./pages/BusinessDashboard"
 
 function App() {
   const [loginModalOpen, setLoginModalOpen] = useState(false)
@@ -16,6 +17,7 @@ function App() {
         <Route path="/signup" element={<UserSignUp onLoginClick={() => setLoginModalOpen(true)} />} />
         <Route path="/write-review" element={<WriteReview onLoginClick={() => setLoginModalOpen(true)} />} />
         <Route path="/review/:businessId" element={<ReviewForm onLoginClick={() => setLoginModalOpen(true)} />} />
+        <Route path="/business/dashboard" element={<BusinessDashboard />} />
       </Routes>
       <LoginModal isOpen={loginModalOpen} onClose={() => setLoginModalOpen(false)} />
     </>
