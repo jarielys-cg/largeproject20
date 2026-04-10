@@ -12,10 +12,7 @@ const businessSchema = new mongoose.Schema({
     },
     category: {
         type: [String],
-<<<<<<< Updated upstream
         required: true,
-=======
->>>>>>> Stashed changes
         default: []
     },
     description: {

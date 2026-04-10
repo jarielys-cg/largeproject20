@@ -3,12 +3,9 @@ const router = express.Router();
 import { addB } from "./addB.js";
 import { editB } from "./editB.js";
 import { removeB } from "./removeB.js";
-<<<<<<< Updated upstream
 import { searchBusiness } from "./search.js";
-=======
 import Business from "../models/Business.js";
 import jwt from "jsonwebtoken";
->>>>>>> Stashed changes
 
 router.post("/addB", addB);
 router.patch("/editB", editB);

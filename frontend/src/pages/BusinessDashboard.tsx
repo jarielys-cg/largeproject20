@@ -262,7 +262,7 @@ const handleRemoveCategory = async (cat: string) => {
 
               <div className="flex-1">
 
-                //Business name
+                {/*Business name*/}
                 <div className="flex items-center gap-3 mb-2">
                   {editingName ? (
                     <div className="flex items-center gap-2 flex-1">
@@ -288,7 +288,7 @@ const handleRemoveCategory = async (cat: string) => {
                   )}
                 </div>
 
-                //Website
+                {/*Website */}
                 <div className="flex items-center gap-2 mb-3">
                   {editingWebsite ? (
                     <div className="flex items-center gap-2 flex-1">
@@ -348,7 +348,7 @@ const handleRemoveCategory = async (cat: string) => {
                   )}
                 </div>
 
-                //Action buttons
+                {/* Action buttons */}
                 <div className="flex items-center gap-3">
                   <label className="flex items-center gap-2 text-sm text-bm-coral border border-bm-coral px-3 py-1.5 rounded-lg hover:bg-bm-coral hover:text-white transition-colors cursor-pointer">
                     <ImagePlus size={14} />
