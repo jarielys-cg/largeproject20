@@ -17,9 +17,9 @@ export const editB = async (req: Request, res: Response) =>
         return res.status(404).json({ error: "Business not found" });
     }
 
-    const params = { newName, category, description, image, address, phone, websiteLink };
+    const params = { newName, category: Array.isArray(category) ? category : category ? [category] : undefined, description, image, address, phone, websiteLink }
 
-    const updateData: Record<string, string> = {};
+    const updateData: Record<string, any> = {};
     Object.entries(params).forEach(([key, value]) => 
     {
         if (value !== undefined) 

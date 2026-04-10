@@ -65,19 +65,27 @@ const ReviewForm = ({ onLoginClick }: ReviewFormProps) => {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (rating === 0 || review.length < minChars) return
-    setLoading(true)
-    try {
-      await api.post('/reviews', { businessId, rating, review })
-      toast.success('Review posted!')
-      navigate(-1)
-    } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Failed to post review')
-    } finally {
-      setLoading(false)
-    }
+  e.preventDefault()
+  if (rating === 0 || review.length < minChars) return
+  setLoading(true)
+  try {
+    const token = localStorage.getItem('token')
+    const payload = JSON.parse(atob(token!.split('.')[1]))
+
+    await api.post('/reviews', {
+      businessId,
+      userId: payload.userId,
+      rating,
+      review
+    })
+    toast.success('Review posted!')
+    navigate(-1)
+  } catch (err: any) {
+    toast.error(err.response?.data?.error || 'Failed to post review')
+  } finally {
+    setLoading(false)
   }
+}
 
   if (bizLoading) {
     return (
