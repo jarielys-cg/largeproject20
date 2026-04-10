@@ -54,7 +54,7 @@ const ReviewForm = ({ onLoginClick }: ReviewFormProps) => {
 
   const activeRating = hoveredRating || rating
   const ratingConfig = activeRating > 0 ? RATING_CONFIG[activeRating - 1] : null
-  const hints = business ? (HINT_TAGS[business.category] || HINT_TAGS.default) : HINT_TAGS.default
+  const hints = business ? (HINT_TAGS[business.category[0]] || HINT_TAGS.default) : HINT_TAGS.default
   const minChars = 85
   const remaining = minChars - review.length
 
@@ -106,8 +106,8 @@ const ReviewForm = ({ onLoginClick }: ReviewFormProps) => {
         {/* Business header*/}
         {business && (
           <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-200">
-            {business.photo ? (
-              <img src={business.photo} alt={business.name} className="w-14 h-14 rounded-lg object-cover" />
+            {business.photos?.[0] ? (
+              <img src={business.photos[0]} alt={business.name} className="w-14 h-14 rounded-lg object-cover" />
             ) : (
               <div className="w-14 h-14 bg-bm-gray rounded-lg flex items-center justify-center shrink-0">
                 <Store size={28} className="text-bm-coral" />
