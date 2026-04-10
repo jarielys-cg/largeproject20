@@ -11,8 +11,9 @@ const businessSchema = new mongoose.Schema({
         required: true
     },
     category: {
-        type: String,
-        required: true
+        type: [String],
+        required: true,
+        default: []
     },
     description: {
         type: String,
