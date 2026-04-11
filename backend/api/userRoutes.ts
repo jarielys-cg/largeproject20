@@ -3,11 +3,13 @@ const router = express.Router();
 
 import { signUp } from "./signUp.js";
 import { login } from "./login.js";
+import { passwordReset } from "./passwordReset.js";
 import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
 
 router.post("/signUp", signUp);
 router.post("/login", login);
+router.patch("/passwordReset", passwordReset);
 router.get('/auth/me', async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1]

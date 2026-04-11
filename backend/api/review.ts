@@ -52,8 +52,26 @@ router.post("/", async (req, res) => {
 // GET REVIEWS FOR ONE BUSINESS
 router.get("/business/:businessId", async (req, res) => {
   try {
-    const reviews = await Review.find({ businessId: req.params.businessId });
-    return res.json(reviews);
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = 20;
+
+    const skip = (page - 1) * limit;
+
+    const reviews = await Review.find({ businessId: req.params.businessId })
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }); // optional: newest first
+
+    const totalReviews = await Review.countDocuments({
+      businessId: req.params.businessId,
+    });
+
+    return res.json({
+      page,
+      totalPages: Math.ceil(totalReviews / limit),
+      totalReviews,
+      reviews,
+    });
   } catch (err: any) {
     return res.status(500).json({ message: err.message });
   }
