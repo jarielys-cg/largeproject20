@@ -1,6 +1,7 @@
 import { Router } from "express";
 import Review from "../models/Review.js";
 import Business from "../models/Business.js";
+import { authMiddleware } from "./authMiddleware.js";
 
 const router = Router();
 
@@ -22,9 +23,10 @@ const updateBusinessRating = async (businessId: string) => {
 };
 
 // ADD REVIEW
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { businessId, userId, rating, review } = req.body;
+    const { businessId, rating, review } = req.body;
+    const userId = (req as any).user.id;
 
     if (!businessId || !userId || !rating || !review) {
       return res.status(400).json({ message: "All fields are required" });
@@ -78,10 +80,15 @@ router.get("/business/:businessId", async (req, res) => {
 });
 
 // UPDATE REVIEW
-router.put("/:id", async (req, res) => {
+router.put("/:id", authMiddleware, async (req, res) => {
   try {
     const review = await Review.findById(req.params.id);
+    const userId = (req as any).user.id;
 
+    if(userId != review?.userId)
+    {
+      return res.status(400).json({ message: "Incorrect user Id" });
+    }
     if (!review) {
       return res.status(404).json({ message: "Review not found" });
     }
@@ -107,10 +114,15 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE REVIEW
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const review = await Review.findById(req.params.id);
+    const userId = (req as any).user.id;
 
+    if(userId != review?.userId)
+    {
+      return res.status(400).json({ message: "Incorrect user Id" });
+    }
     if (!review) {
       return res.status(404).json({ message: "Review not found" });
     }
