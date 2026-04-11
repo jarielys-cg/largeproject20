@@ -24,7 +24,10 @@ export const passwordReset = async (req: Request, res: Response) =>
             });
 
             const savedUser = await existingUser.save();
-            res.status(200).json(savedUser);
+
+            const { password: _password, ...sanitizedUser } = savedUser.toObject();
+            
+            return res.status(200).json({savedUser: sanitizedUser});
         } 
         catch
         {
