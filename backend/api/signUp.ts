@@ -1,5 +1,9 @@
 import type { Request, Response } from "express";
 import User from "../models/User.js";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const signUp = async (req: Request, res: Response) => 
 {
@@ -28,8 +32,26 @@ export const signUp = async (req: Request, res: Response) =>
 
     try 
     {
+        const jwtSecret = process.env.JWT_SECRET
+        if(!jwtSecret) {
+            return res.status(500).json({ error: "JWT secret is not configured" })
+        }
+
         const savedUser = await newUser.save(); // saves to MongoDB
-        res.status(201).json(savedUser);       // respond with the saved user
+
+        const token = jwt.sign(
+            { userId: savedUser._id.toString() },
+            jwtSecret,
+            { expiresIn: "24h" }
+        ) 
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password, ...sanitizedUser } = savedUser.toObject();
+
+        return res.status(200).json({
+                token,
+                savedUser: sanitizedUser
+            });
     } 
     catch (err) 
     {

@@ -4,7 +4,10 @@ import mongoose from "mongoose";
 
 export const removeB = async (req: Request, res: Response) => 
 {
-    const { name, ownerId } = req.body;
+    const { name } = req.body;
+
+    const ownerId = (req as any).user.id;
+
     if(!mongoose.isValidObjectId(ownerId))
     {
         return res.status(400).json({ error: "Invalid ID" });

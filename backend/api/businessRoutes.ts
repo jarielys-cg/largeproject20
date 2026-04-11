@@ -6,10 +6,11 @@ import { removeB } from "./removeB.js";
 import { searchBusiness } from "./search.js";
 import Business from "../models/Business.js";
 import jwt from "jsonwebtoken";
+import { authMiddleware } from "./authMiddleware.js";
 
-router.post("/addB", addB);
-router.patch("/editB", editB);
-router.delete("/removeB", removeB);
+router.post("/addB", authMiddleware, addB);
+router.patch("/editB", authMiddleware, editB);
+router.delete("/removeB", authMiddleware, removeB);
 router.post("/search", searchBusiness);
 
 // GET all businesses for logged in owner

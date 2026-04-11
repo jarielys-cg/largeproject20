@@ -1,6 +1,9 @@
 import type { Request, Response } from "express";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const login = async (req: Request, res: Response) => 
 {
@@ -24,7 +27,7 @@ export const login = async (req: Request, res: Response) =>
             }
 
             const token = jwt.sign(
-                { userId: existingUser._id },
+                { userId: existingUser._id.toString() },
                 jwtSecret,
                 { expiresIn: "24h" }
             )       
