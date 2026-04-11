@@ -15,6 +15,7 @@ const BusinessCategories = ({ categories, onAdd, onRemove }: Props) => {
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-6">
       <h2 className="text-lg font-bold text-gray-900 mb-4">Categories & Services</h2>
+
       <div className="space-y-3 mb-4">
         {categories.map(cat => (
           <div key={cat} className="flex items-center justify-between p-3 border border-gray-200 rounded-xl">
@@ -28,6 +29,7 @@ const BusinessCategories = ({ categories, onAdd, onRemove }: Props) => {
           </div>
         ))}
       </div>
+
       <div className="relative">
         <button
           onClick={() => setShowDropdown(prev => !prev)}
@@ -36,21 +38,29 @@ const BusinessCategories = ({ categories, onAdd, onRemove }: Props) => {
           <Plus size={16} />
           Add Category
         </button>
+
         {showDropdown && (
-          <div className="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
-            {CATEGORIES.filter(c => !categories.includes(c)).map(cat => (
-              <button
-                key={cat}
-                onClick={() => { onAdd(cat); setShowDropdown(false) }}
-                className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-bm-gray hover:text-bm-coral transition-colors"
-              >
-                {cat}
-              </button>
-            ))}
-            {CATEGORIES.filter(c => !categories.includes(c)).length === 0 && (
-              <p className="px-4 py-3 text-sm text-gray-400">All categories added</p>
-            )}
-          </div>
+          <>
+            {/* Invisible overlay to catch outside clicks */}
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setShowDropdown(false)}
+            />
+            <div className="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+              {CATEGORIES.filter(c => !categories.includes(c)).map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => { onAdd(cat); setShowDropdown(false) }}
+                  className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-bm-gray hover:text-bm-coral transition-colors"
+                >
+                  {cat}
+                </button>
+              ))}
+              {CATEGORIES.filter(c => !categories.includes(c)).length === 0 && (
+                <p className="px-4 py-3 text-sm text-gray-400">All categories added</p>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>

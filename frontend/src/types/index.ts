@@ -40,6 +40,8 @@ export interface BusinessForm {
 export interface BusinessSignUpModalProps {
   isOpen: boolean
   onClose: () => void
+  skipAccountStep?: boolean 
+  onSuccess?: () => void
 }
 
 export interface LoginForm {
@@ -52,6 +54,7 @@ export interface LoginModalProps {
   isOpen: boolean
   onClose: () => void
   defaultBusinessOwner?: boolean
+  onBusinessSignUp?: () => void 
 }
 
 export interface Business {

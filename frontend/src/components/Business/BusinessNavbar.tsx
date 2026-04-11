@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import logo from '../../assets/logo.png'
 import { Settings, LogOut, ChevronDown } from 'lucide-react'
@@ -13,6 +13,21 @@ const BusinessNavbar = ({ owner, onLogout }: Props) => {
   const [profileDropdown, setProfileDropdown] = useState(false)
   const [showOwnerName, setShowOwnerName] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setProfileDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Get initials from firstName and lastName
+  const initials = owner
+    ? `${owner.firstName.charAt(0)}${owner.lastName.charAt(0)}`.toUpperCase()
+    : 'B'
 
   return (
     <nav className="w-full bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between relative z-10">
@@ -31,15 +46,17 @@ const BusinessNavbar = ({ owner, onLogout }: Props) => {
           onMouseLeave={() => setShowOwnerName(false)}
           className="flex items-center gap-2 hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors"
         >
+          {/* Owner initials */}
           <div className="w-8 h-8 rounded-full bg-bm-coral flex items-center justify-center text-white text-sm font-bold">
-            {owner?.username?.charAt(0).toUpperCase() ?? 'B'}
+            {initials}
           </div>
           <ChevronDown size={16} className={`text-gray-500 transition-transform ${profileDropdown ? 'rotate-180' : ''}`} />
         </button>
 
+        {/* Tooltip */}
         {showOwnerName && !profileDropdown && (
           <div className="absolute top-full right-0 mt-1 bg-gray-800 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap z-50">
-            {owner?.username}
+            {owner?.firstName} {owner?.lastName}
           </div>
         )}
 

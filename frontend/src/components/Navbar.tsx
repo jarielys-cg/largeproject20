@@ -94,8 +94,21 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
         </div>
       </nav>
 
-      <BusinessSignUpModal isOpen={bizModalOpen} onClose={() => setBizModalOpen(false)} />
-      <LoginModal isOpen={bizLoginOpen} onClose={() => setBizLoginOpen(false)} defaultBusinessOwner={true} />
+       <BusinessSignUpModal
+        isOpen={bizModalOpen}
+        onClose={() => setBizModalOpen(false)}
+        skipAccountStep={false}
+      />
+
+       <LoginModal
+          isOpen={bizLoginOpen}
+          onClose={() => setBizLoginOpen(false)}
+          defaultBusinessOwner={true}
+          onBusinessSignUp={() => {
+            setBizLoginOpen(false)
+            setBizModalOpen(true)
+          }}
+        />
     </>
   )
 }

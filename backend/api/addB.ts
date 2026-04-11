@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 export const addB = async (req: Request, res: Response) => 
 {
     const { name, ownerId, category, description, image, address, phone, websiteLink,  } = req.body;
-
+    const categoryArray = Array.isArray(category) ? category : [category]
     if(!mongoose.isValidObjectId(ownerId))
     {
         return res.status(400).json({ error: "Invalid ID" });
@@ -15,7 +15,7 @@ export const addB = async (req: Request, res: Response) =>
     const newBusiness = new Business({
         name,
         ownerId: ownerObjectId,
-        category,
+        category: categoryArray,
         description,
         image,
         address,

@@ -3,9 +3,11 @@ import { useState } from 'react'
 import { type LoginForm, type LoginModalProps } from "../../types"
 import api from '../../lib/axios'
 import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router'
 
-const LoginModal = ({ isOpen, onClose, defaultBusinessOwner = false }: LoginModalProps) => {
+const LoginModal = ({ isOpen, onClose, defaultBusinessOwner = false, onBusinessSignUp }: LoginModalProps) => {
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
   const [form, setForm] = useState<LoginForm>({
     email: '',
     password: '',
@@ -18,22 +20,23 @@ const LoginModal = ({ isOpen, onClose, defaultBusinessOwner = false }: LoginModa
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    try {
-      const res = await api.post('/login', form)
-      toast.success(`Hello ${res.data.user.username}`)
-      if (res.data.token) {
-        localStorage.setItem("token", res.data.token)
+  e.preventDefault()
+  setLoading(true)
+  try {
+    const res = await api.post('/login', { email: form.email, password: form.password })
+    localStorage.setItem('token', res.data.token)
+    toast.success(`Hello ${res.data.user.username}!`)
+    onClose()
+
+    if (form.isBusinessOwner || res.data.user.isBusinessOwner) {
+        navigate('/business/dashboard')
       }
-      onClose()
-    } catch (err: any) {
-      const message = err.response?.data?.error || 'Incorrect email or password'
-      toast.error(message, { duration: 5000 })
-    } finally {
-      setLoading(false)
-    }
+  } catch (err: any) {
+    toast.error(err.response?.data?.error || 'Incorrect email or password')
+  } finally {
+    setLoading(false)
   }
+}
 
   if (!isOpen) return null
 
@@ -97,7 +100,15 @@ const LoginModal = ({ isOpen, onClose, defaultBusinessOwner = false }: LoginModa
 
         <p>
           New to BizMart?{" "}
-          <a href="/signup" className="text-bm-coral hover:text-bm-coral-dark">Sign up here</a>
+          <span
+            className="text-bm-coral hover:text-bm-coral-dark cursor-pointer hover:underline"
+            onClick={() => {
+              onClose()
+              onBusinessSignUp?.()  // ← this opens the choice modal
+            }}
+          >
+            Sign up here
+          </span>
         </p>
       </div>
     </div>

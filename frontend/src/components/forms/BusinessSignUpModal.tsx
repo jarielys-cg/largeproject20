@@ -3,6 +3,7 @@ import toast from 'react-hot-toast'
 import api from "../../lib/axios"
 import type { BusinessForm, BusinessSignUpModalProps } from "../../types"
 
+
 const CATEGORIES = [
   'Restaurants',
   'Shopping',
@@ -12,7 +13,7 @@ const CATEGORIES = [
   'Other'
 ]
 
-const BusinessSignUpModal = ({ isOpen, onClose }: BusinessSignUpModalProps) => {
+const BusinessSignUpModal = ({ isOpen, onClose, skipAccountStep = false, onSuccess }: BusinessSignUpModalProps) => {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState<BusinessForm>({
@@ -27,43 +28,99 @@ const BusinessSignUpModal = ({ isOpen, onClose }: BusinessSignUpModalProps) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  const handleNext = (e: React.FormEvent) => {
+ const handleNext = async (e: React.FormEvent) => {
     e.preventDefault()
-    setStep(prev => prev + 1)
+    if (step === 2 && skipAccountStep) {
+      await handleSubmit(e)
+    } else {
+      setStep(prev => prev + 1)
+    }
   }
 
   const handleBack = () => setStep(prev => prev - 1)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    try {
-      await api.post('/business/signup', form)
-      toast.success(`${form.businessName} has been registered!`, { duration: 4000 })
-      onClose()
-      setStep(1)
-      setForm({
-        businessName: '', category: '', phone: '',
-        address: '', city: '', zipCode: '',
-        ownerName: '', email: '', password: ''
-      })
-    } catch (err: any) {
-      const message = err.response?.data?.error || 'Failed to register business. Try again.'
-      toast.error(message, { duration: 5000 })
-    } finally {
-      setLoading(false)
-    }
-  }
+  const resetForm = () => {
+  setStep(1)
+  setForm({
+    businessName: '', category: '', phone: '',
+    address: '', city: '', zipCode: '',
+    ownerName: '', email: '', password: ''
+  })
+}
 
-  const stepTitles = [
-    'Business Info',
-    'Location',
-    'Your Account'
-  ]
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setLoading(true)
+  try {
+    if (!skipAccountStep) {
+      //create the user account (new business owner signing up)
+      await api.post('/signup', {
+        firstName: form.ownerName.split(' ')[0],
+        lastName: form.ownerName.split(' ')[1] || '',
+        email: form.email,
+        password: form.password,
+        username: form.email.split('@')[0],
+        zipCode: form.zipCode,
+        isBusinessOwner: true
+      })
+
+      // login to get the token
+      const loginRes = await api.post('/login', {
+        email: form.email,
+        password: form.password
+      })
+      localStorage.setItem('token', loginRes.data.token)
+
+      //add the business using the new token
+      const payload = JSON.parse(atob(loginRes.data.token.split('.')[1]))
+      await api.post('/addB', {
+        name: form.businessName,
+        ownerId: payload.userId,
+        category: form.category,
+        address: `${form.address}, ${form.city}, ${form.zipCode}`,
+        phone: form.phone,
+        description: '',
+        websiteLink: ''
+      })
+
+      toast.success(`Welcome! ${form.businessName} has been registered!`)
+      onClose()
+      resetForm()
+      window.location.href = '/business/dashboard'
+
+    } else {
+      // Already logged in just add the business
+      const token = localStorage.getItem('token')
+      const payload = JSON.parse(atob(token!.split('.')[1]))
+      await api.post('/addB', {
+        name: form.businessName,
+        ownerId: payload.userId,
+        category: form.category,
+        address: `${form.address}, ${form.city}, ${form.zipCode}`,
+        phone: form.phone,
+        description: '',
+        websiteLink: ''
+      })
+      toast.success(`${form.businessName} has been registered!`)
+      onClose()
+      resetForm()
+      onSuccess?.()
+    }
+
+  } catch (err: any) {
+    toast.error(err.response?.data?.error || 'Failed to register business')
+  } finally {
+    setLoading(false)
+  }
+}
+
+  const stepTitles = skipAccountStep
+    ? ['Business Info', 'Location']
+    : ['Business Info', 'Location', 'Your Account']
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/60 flex items-center justify-center z-100"
       onClick={onClose}
     >
       <div
@@ -77,7 +134,7 @@ const BusinessSignUpModal = ({ isOpen, onClose }: BusinessSignUpModalProps) => {
             <button onClick={onClose} className="text-white/70 hover:text-white text-xl">✕</button>
           </div>
 
-          {/* Step indicators */}
+          //Step indicators 
           <div className="flex items-center gap-2">
             {stepTitles.map((title, i) => (
               <div key={i} className="flex items-center gap-2 flex-1">
@@ -103,7 +160,7 @@ const BusinessSignUpModal = ({ isOpen, onClose }: BusinessSignUpModalProps) => {
         {/* Form body */}
         <div className="px-8 py-6">
 
-          {/* Step 1 - Business Info */}
+          //Step 1 - Business Info
           {step === 1 && (
             <form onSubmit={handleNext} className="space-y-4">
               <div>
@@ -143,7 +200,7 @@ const BusinessSignUpModal = ({ isOpen, onClose }: BusinessSignUpModalProps) => {
             </form>
           )}
 
-          {/* Step 2 - Location */}
+          //Step 2 - Location
           {step === 2 && (
             <form onSubmit={handleNext} className="space-y-4">
               <div>
@@ -182,13 +239,13 @@ const BusinessSignUpModal = ({ isOpen, onClose }: BusinessSignUpModalProps) => {
                 </button>
                 <button type="submit"
                   className="flex-1 h-11 bg-bm-coral hover:bg-bm-coral-dark text-white font-semibold rounded-lg transition-colors">
-                  Continue →
+                  {step === 2 && skipAccountStep ? 'Add Business' : 'Continue →'}
                 </button>
               </div>
             </form>
           )}
 
-          {/* Step 3 - Account */}
+          //Step 3 - Account
           {step === 3 && (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
