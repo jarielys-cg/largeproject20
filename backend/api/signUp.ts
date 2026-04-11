@@ -45,6 +45,7 @@ export const signUp = async (req: Request, res: Response) =>
             { expiresIn: "24h" }
         ) 
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { password, ...sanitizedUser } = savedUser.toObject();
 
         return res.status(200).json({

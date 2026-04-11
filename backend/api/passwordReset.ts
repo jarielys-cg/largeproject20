@@ -25,6 +25,7 @@ export const passwordReset = async (req: Request, res: Response) =>
 
             const savedUser = await existingUser.save();
 
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { password, ...sanitizedUser } = savedUser.toObject();
             
             return res.status(200).json({savedUser: sanitizedUser});
