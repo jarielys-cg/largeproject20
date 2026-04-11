@@ -4,7 +4,10 @@ import mongoose from "mongoose";
 
 export const editB = async (req: Request, res: Response) => 
 {
-    const { name, ownerId, newName, category, description, image, address, phone, websiteLink,  } = req.body;
+    const { name, newName, category, description, image, address, phone, websiteLink,  } = req.body;
+
+    const ownerId = (req as any).user.id;
+
     if(!mongoose.isValidObjectId(ownerId))
     {
         return res.status(400).json({ error: "Invalid ID" });
