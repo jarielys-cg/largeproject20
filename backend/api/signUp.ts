@@ -45,7 +45,7 @@ export const signUp = async (req: Request, res: Response) =>
             { expiresIn: "24h" }
         ) 
 
-        const { password: _password, ...sanitizedUser } = savedUser.toObject();
+        const { password, ...sanitizedUser } = savedUser.toObject();
 
         return res.status(200).json({
                 token,
