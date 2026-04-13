@@ -73,15 +73,18 @@ const handleSubmit = async (e: React.FormEvent) => {
 
       //add the business using the new token
       const payload = JSON.parse(atob(loginRes.data.token.split('.')[1]))
-      await api.post('/addB', {
-        name: form.businessName,
-        ownerId: payload.userId,
-        category: form.category,
-        address: `${form.address}, ${form.city}, ${form.zipCode}`,
-        phone: form.phone,
-        description: '',
-        websiteLink: ''
-      })
+     await api.post('/addB', {
+      name: form.businessName,
+      ownerId: payload.userId,
+      category: form.category,
+      address: form.address,
+      city: form.city,
+      state: '',        
+      zipCode: form.zipCode,
+      phone: form.phone,
+      description: '',
+      websiteLink: ''
+    })
 
       toast.success(`Welcome! ${form.businessName} has been registered!`)
       onClose()
@@ -96,7 +99,10 @@ const handleSubmit = async (e: React.FormEvent) => {
         name: form.businessName,
         ownerId: payload.userId,
         category: form.category,
-        address: `${form.address}, ${form.city}, ${form.zipCode}`,
+        address: form.address,
+        city: form.city,
+        state: '',
+        zipCode: form.zipCode,
         phone: form.phone,
         description: '',
         websiteLink: ''

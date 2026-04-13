@@ -9,6 +9,8 @@ import BusinessSidebar from "../components/Business/BusinessSidebar"
 import BusinessCategories from "../components/Business/BusinessCategories"
 import BusinessPhotos from "../components/Business/BusinessPhotos"
 import BusinessSignUpModal from '../components/forms/BusinessSignUpModal'
+import BusinessDescription from "../components/Business/BusinessDescription"
+import BusinessInfo from "../components/Business/BusinessInfo"
 
 interface ReviewStats { count: number; avgRating: number }
 interface Owner { _id: string; firstName: string; lastName: string; username: string }
@@ -214,6 +216,60 @@ const handleRemoveCategory = async (cat: string) => {
     }
   }
 
+  const handleSaveDescription = async (description: string) => {
+    if (!activeBusiness) return
+    try {
+      const token = localStorage.getItem('token')
+      const payload = JSON.parse(atob(token!.split('.')[1]))
+      const res = await api.patch('/editB', {
+        ownerId: payload.userId,
+        name: activeBusiness.name,
+        description
+      })
+      setActiveBusiness(res.data)
+      setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
+      toast.success('Description updated!')
+    } catch {
+      toast.error('Failed to update description')
+    }
+  }
+
+  const handleSavePhone = async (phone: string) => {
+    if (!activeBusiness) return
+    try {
+      const token = localStorage.getItem('token')
+      const payload = JSON.parse(atob(token!.split('.')[1]))
+      const res = await api.patch('/editB', {
+        ownerId: payload.userId,
+        name: activeBusiness.name,
+        phone
+      })
+      setActiveBusiness(res.data)
+      setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
+      toast.success('Phone updated!')
+    } catch {
+      toast.error('Failed to update phone')
+    }
+  }
+
+  const handleSaveAddress = async (address: string) => {
+    if (!activeBusiness) return
+    try {
+      const token = localStorage.getItem('token')
+      const payload = JSON.parse(atob(token!.split('.')[1]))
+      const res = await api.patch('/editB', {
+        ownerId: payload.userId,
+        name: activeBusiness.name,
+        address
+      })
+      setActiveBusiness(res.data)
+      setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
+      toast.success('Address updated!')
+    } catch {
+      toast.error('Failed to update address')
+    }
+  }
+
   const handleLogout = () => {
     localStorage.removeItem('token')
     navigate('/')
@@ -231,7 +287,7 @@ const handleRemoveCategory = async (cat: string) => {
     <div className="min-h-screen bg-bm-gray">
       <BusinessNavbar owner={owner} onLogout={handleLogout} />
 
-      <div className="flex max-w-6xl mx-auto px-6 py-10 gap-6">
+      <div className="flex max-w-7xl mx-auto px-6 py-10 gap-6">
         <BusinessSidebar
           businesses={businesses}
           activeBusiness={activeBusiness}
@@ -285,45 +341,6 @@ const handleRemoveCategory = async (cat: string) => {
                         <Pencil size={13} /> Edit
                       </button>
                     </>
-                  )}
-                </div>
-
-                {/*Website */}
-                <div className="flex items-center gap-2 mb-3">
-                  {editingWebsite ? (
-                    <div className="flex items-center gap-2 flex-1">
-                      <input value={tempWebsite} onChange={e => setTempWebsite(e.target.value)}
-                        placeholder="https://yourbusiness.com" type="url"
-                        className="flex-1 border border-bm-coral rounded-lg px-3 py-1.5 text-sm focus:outline-none" autoFocus />
-                      <button onClick={handleSaveWebsite} disabled={savingWebsite}
-                        className="bg-bm-coral text-white text-sm px-3 py-1.5 rounded-lg hover:bg-bm-coral-dark transition-colors disabled:opacity-60">
-                        {savingWebsite ? 'Saving...' : 'Save'}
-                      </button>
-                      <button onClick={() => setEditingWebsite(false)}
-                        className="border border-gray-200 text-gray-600 text-sm px-3 py-1.5 rounded-lg hover:border-gray-400 transition-colors">
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      {activeBusiness?.website ? (
-                        <>
-                          <a href={activeBusiness.website} target="_blank" rel="noopener noreferrer"
-                            className="text-sm text-bm-coral hover:underline">
-                            {activeBusiness.website}
-                          </a>
-                          <button onClick={() => { setTempWebsite(activeBusiness.website ?? ''); setEditingWebsite(true) }}
-                            className="flex items-center gap-1.5 text-sm border border-gray-200 text-gray-600 hover:border-bm-coral hover:text-bm-coral px-3 py-1.5 rounded-lg transition-colors">
-                            <Pencil size={13} /> Edit
-                          </button>
-                        </>
-                      ) : (
-                        <button onClick={() => { setTempWebsite(''); setEditingWebsite(true) }}
-                          className="flex items-center gap-2 text-sm text-gray-400 border border-dashed border-gray-300 hover:border-bm-coral hover:text-bm-coral px-3 py-1.5 rounded-lg transition-colors">
-                          <Plus size={13} /> Add website
-                        </button>
-                      )}
-                    </div>
                   )}
                 </div>
 
@@ -399,6 +416,11 @@ const handleRemoveCategory = async (cat: string) => {
               </div>
             </div>
           </div>
+           {/* Description — between header and categories */}
+        <BusinessDescription
+          description={activeBusiness?.description}
+          onSave={handleSaveDescription}
+        />
 
           <BusinessCategories
             categories={activeBusiness?.category ?? []}
@@ -412,8 +434,16 @@ const handleRemoveCategory = async (cat: string) => {
             onUpload={handlePhotoUpload}
             onRemove={handleRemovePhoto}
           />
-
         </div>
+
+         <BusinessInfo
+          address={activeBusiness?.address}
+          phone={activeBusiness?.phone}
+          websiteLink={activeBusiness?.websiteLink}
+          onSaveWebsite={handleSaveWebsite}
+          onSavePhone={handleSavePhone}
+          onSaveAddress={handleSaveAddress}
+        />
       </div>
 
       <BusinessSignUpModal
