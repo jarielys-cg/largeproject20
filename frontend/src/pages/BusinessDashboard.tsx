@@ -209,6 +209,23 @@ const handleRemoveCategory = async (cat: string) => {
       toast.error('Failed to update description')
     }
   }
+  const handleSaveWebsite = async (url: string) => {
+    if (!activeBusiness) return
+    try {
+      const token = localStorage.getItem('token')
+      const payload = JSON.parse(atob(token!.split('.')[1]))
+      const res = await api.patch('/editB', {
+        ownerId: payload.userId,
+        name: activeBusiness.name,
+        websiteLink: url
+      })
+      setActiveBusiness(res.data)
+      setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
+      toast.success('Website updated!')
+    } catch {
+      toast.error('Failed to update website')
+    }
+}
 
   const handleSavePhone = async (phone: string) => {
     if (!activeBusiness) return
