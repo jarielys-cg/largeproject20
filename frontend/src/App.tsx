@@ -9,6 +9,7 @@ import ReviewForm from "./pages/ReviewForm"
 import BusinessDashboard from "./pages/BusinessDashboard"
 import BusinessSignUpModal from "./components/forms/BusinessSignUpModal"
 import SignUpChoiceModal from "./components/forms/SignUpModalChoice"
+import BusinessReviews from "./pages/BusinessReviews"
 
 function App() {
   const [loginModalOpen, setLoginModalOpen] = useState(false)
@@ -23,6 +24,7 @@ function App() {
         <Route path="/write-review" element={<WriteReview onLoginClick={() => setLoginModalOpen(true)} />} />
         <Route path="/review/:businessId" element={<ReviewForm onLoginClick={() => setLoginModalOpen(true)} />} />
         <Route path="/business/dashboard" element={<BusinessDashboard />} />
+        <Route path="/business/reviews/:businessId" element={<BusinessReviews />} />
       </Routes>
 
      
