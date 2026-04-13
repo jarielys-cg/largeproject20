@@ -1,4 +1,4 @@
-// Search API - search and display businesses based on name and category
+// Search API - search and display businesses based on name, category, and/or location
 import type { Request, Response } from "express";
 import Business from "../models/Business.js";
 
@@ -13,7 +13,10 @@ export const searchBusiness = async(req: Request, res: Response) => {
         ? { 
             $or : [
                 { name : { $regex: search, $options: "i" } }, 
-                { category : { $regex: search, $options: "i" } }
+                { category : { $regex: search, $options: "i" } },
+                { city : { $regex: search, $options: "i" } },
+                { state : { $regex: search, $options: "i" }},
+                { zipCode : { $regex: search, $options: "i" }}
             ] 
         } 
         : {};
