@@ -18,9 +18,20 @@ const s3 = new S3Client({
 
 export const getUploadUrl = async (req: Request, res: Response) => 
 {
-    const { fileType } = req.query;
     const ownerId = (req as any).user.id;
-    const { name } = req.body;
+    const { name, fileType } = req.body;
+
+    const mimeToExt: Record<string, string> = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    };
+
+    const extension = mimeToExt[fileType];
+
+    if (!extension) {
+      return res.status(400).json({ error: "Invalid file type" });
+    }
 
     if(!mongoose.isValidObjectId(ownerId))
     {
@@ -34,12 +45,12 @@ export const getUploadUrl = async (req: Request, res: Response) =>
         return res.status(404).json({ error: "Business not found" });
     }
     try {
-        const fileName = `uploads/${Date.now()}.${fileType}`;
+        const fileName = `uploads/${Date.now()}.${extension}`;
 
         const command = new PutObjectCommand({
         Bucket: "marketplacegroup20",
         Key: fileName,
-        ContentType: `image/${fileType}`,
+        ContentType: `image/${extension}`,
         ACL: "public-read",
         });
 
@@ -47,7 +58,7 @@ export const getUploadUrl = async (req: Request, res: Response) =>
 
         try
         {
-          existingBusiness.image.push(url);
+          existingBusiness.image.push(fileName);
           await existingBusiness.save();
         }
         catch
