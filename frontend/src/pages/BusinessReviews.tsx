@@ -4,6 +4,7 @@ import { Star } from 'lucide-react'
 import api from "../lib/axios"
 import BusinessNavbar from "../components/Business/BusinessNavbar"
 import type { Owner, Review } from "../types"
+import { getRatingColor } from "../utils/ratingConfig"
 
 const BusinessReviews = () => {
   const { businessId } = useParams()
@@ -45,11 +46,7 @@ const BusinessReviews = () => {
     navigate('/')
   }
 
-  const getRatingColor = (rating: number) => {
-    if (rating <= 2) return '#E03B3B'
-    if (rating === 3) return '#E8A030'
-    return '#63C132'
-  }
+
 
   return (
     <div className="min-h-screen bg-bm-gray">
