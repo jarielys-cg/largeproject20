@@ -67,6 +67,23 @@ export interface Business {
   zipCode?: string      
   category: string[]
   description?: string  
-  photos?: string[]     
+  image?: string[]     
   websiteLink?: string 
+  averageReviewScore?: number 
+}
+
+export interface Review {
+  _id: string
+  businessId: string
+  userId: string
+  rating: number
+  review: string
+  createdAt: string
+}
+
+export interface Owner {
+  _id: string
+  firstName: string
+  lastName: string
+  username: string
 }

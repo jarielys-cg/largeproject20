@@ -5,18 +5,11 @@ import { Star, Store } from 'lucide-react'
 import api from '../lib/axios'
 import toast from 'react-hot-toast'
 import type { Business } from "../types"
+import { RATING_CONFIG } from "../utils/ratingConfig"
 
 interface ReviewFormProps {
   onLoginClick?: () => void
 }
-
-const RATING_CONFIG = [
-  { label: 'Not good', color: '#E03B3B' },
-  { label: 'Could be better', color: '#E03B3B' },
-  { label: 'OK', color: '#E8A030' },
-  { label: 'Good', color: '#F2A44A' },
-  { label: 'Great!', color: '#F2A44A' },
-]
 
 const HINT_TAGS: Record<string, string[]> = {
   Restaurants: ['Food Quality', 'Service', 'Ambiance', 'Wait Time'],
@@ -53,7 +46,7 @@ const ReviewForm = ({ onLoginClick }: ReviewFormProps) => {
   }, [businessId])
 
   const activeRating = hoveredRating || rating
-  const ratingConfig = activeRating > 0 ? RATING_CONFIG[activeRating - 1] : null
+  const ratingConfig = activeRating > 0 ? RATING_CONFIG [activeRating - 1] : null
   const hints = business ? (HINT_TAGS[business.category[0]] || HINT_TAGS.default) : HINT_TAGS.default
   const minChars = 85
   const remaining = minChars - review.length
@@ -79,7 +72,7 @@ const ReviewForm = ({ onLoginClick }: ReviewFormProps) => {
       review
     })
     toast.success('Review posted!')
-    navigate(-1)
+     navigate(`/business/${businessId}`)
   } catch (err: any) {
     toast.error(err.response?.data?.error || 'Failed to post review')
   } finally {
@@ -114,8 +107,8 @@ const ReviewForm = ({ onLoginClick }: ReviewFormProps) => {
         {/* Business header*/}
         {business && (
           <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-200">
-            {business.photos?.[0] ? (
-              <img src={business.photos[0]} alt={business.name} className="w-14 h-14 rounded-lg object-cover" />
+            {business.image?.[0] ? (
+              <img src={business.image[0]} alt={business.name} className="w-14 h-14 rounded-lg object-cover" />
             ) : (
               <div className="w-14 h-14 bg-bm-gray rounded-lg flex items-center justify-center shrink-0">
                 <Store size={28} className="text-bm-coral" />

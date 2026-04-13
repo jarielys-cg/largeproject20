@@ -24,8 +24,11 @@ const WriteReview = ({ onLoginClick }: WriteReviewProps) => {
     setLoading(true)
     setSearched(true)
     try {
-      const res = await api.get(`/businesses/search?q=${search}&location=${location}`)
-      setResults(res.data)
+      const res = await api.post('/search', {
+        search: search,  
+        page: 1
+      })
+      setResults(res.data.data ?? [])
     } catch {
       setResults([])
     } finally {
@@ -99,14 +102,14 @@ const WriteReview = ({ onLoginClick }: WriteReviewProps) => {
                     {results.map(biz => (
                       <div
                         key={biz._id}
-                        onClick={() => navigate(`/review/${biz._id}`)}
+                        onClick={() => navigate(`/business/${biz._id}`)}
                         className="flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:border-bm-coral hover:shadow-sm transition-all cursor-pointer group"
                       >
                         <div className="flex items-center gap-4">
                           {/* Business image or fallback */}
-                          {biz.photo ? (
+                          {biz.image?.[0] ? (
                             <img
-                              src={biz.photo}
+                              src={biz.image[0]}
                               alt={biz.name}
                               className="w-12 h-12 rounded-lg object-cover"
                             />
@@ -115,13 +118,17 @@ const WriteReview = ({ onLoginClick }: WriteReviewProps) => {
                               <Store size={24} className="text-bm-coral" />
                             </div>
                           )}
-                          <div>
+                           <div>
                             <p className="font-medium text-gray-900 group-hover:text-bm-coral">{biz.name}</p>
-                            <p className="text-sm text-gray-500">{biz.category} · {biz.city}</p>
+                            <p className="text-sm text-gray-500">
+                              {Array.isArray(biz.category) ? biz.category[0] : biz.category}
+                              {biz.city ? ` · ${biz.city}` : ''}
+                            </p>
                           </div>
                         </div>
                         <button
                           type="button"
+                          onClick={(e) => { e.stopPropagation(); navigate(`/review/${biz._id}`) }}
                           className="text-sm font-medium text-bm-coral border border-bm-coral px-4 py-1.5 rounded-lg hover:bg-bm-coral hover:text-white transition-colors shrink-0"
                         >
                           Write a Review

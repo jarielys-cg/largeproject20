@@ -10,6 +10,7 @@ import BusinessDashboard from "./pages/BusinessDashboard"
 import BusinessSignUpModal from "./components/forms/BusinessSignUpModal"
 import SignUpChoiceModal from "./components/forms/SignUpModalChoice"
 import BusinessReviews from "./pages/BusinessReviews"
+import BusinessPage from "./pages/BusinessPage"
 
 function App() {
   const [loginModalOpen, setLoginModalOpen] = useState(false)
@@ -25,6 +26,7 @@ function App() {
         <Route path="/review/:businessId" element={<ReviewForm onLoginClick={() => setLoginModalOpen(true)} />} />
         <Route path="/business/dashboard" element={<BusinessDashboard />} />
         <Route path="/business/reviews/:businessId" element={<BusinessReviews />} />
+        <Route path="/business/:businessId" element={<BusinessPage onLoginClick={() => setLoginModalOpen(true)} />} />
       </Routes>
 
      
