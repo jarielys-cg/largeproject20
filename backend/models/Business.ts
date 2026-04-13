@@ -32,7 +32,7 @@ const businessSchema = new mongoose.Schema({
         type: String
     },
     zipCode: {
-        type: String
+        type: Number
     },
     phone: {
         type: String
