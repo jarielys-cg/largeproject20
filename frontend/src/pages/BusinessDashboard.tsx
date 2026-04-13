@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import api from '../lib/axios'
-import { ImagePlus, MessageSquare, Pencil, Plus, Star, Trash2 } from 'lucide-react'
+import { ImagePlus, MessageSquare, Pencil, Star, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import type { Business } from '../types'
 import BusinessNavbar from "../components/Business/BusinessNavbar"
@@ -29,9 +29,6 @@ const BusinessDashboard = () => {
   const [editingName, setEditingName] = useState(false)
   const [tempName, setTempName] = useState('')
   const [savingName, setSavingName] = useState(false)
-  const [editingWebsite, setEditingWebsite] = useState(false)
-  const [tempWebsite, setTempWebsite] = useState('')
-  const [savingWebsite, setSavingWebsite] = useState(false)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [addBusinessModalOpen, setAddBusinessModalOpen] = useState(false)
@@ -128,28 +125,7 @@ const BusinessDashboard = () => {
       setSavingName(false)
     }
   }
-
-  const handleSaveWebsite = async () => {
-    if (!activeBusiness) return
-    setSavingWebsite(true)
-    try {
-      const token = localStorage.getItem('token')
-      const payload = JSON.parse(atob(token!.split('.')[1]))
-      const res = await api.patch('/editB', {
-        ownerId: payload.userId,
-        name: activeBusiness.name,
-        websiteLink: tempWebsite
-      })
-      setActiveBusiness(res.data)
-      setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
-      setEditingWebsite(false)
-    } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Failed to update website')
-    } finally {
-      setSavingWebsite(false)
-    }
-  }
-
+  
   const handleAddCategory = async (cat: string) => {
   if (!activeBusiness) return
   try {
