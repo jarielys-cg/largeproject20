@@ -25,6 +25,15 @@ const businessSchema = new mongoose.Schema({
     address: {
         type: String
     },
+    city: {
+        type: String
+    },
+    state: {
+        type: String
+    },
+    zipCode: {
+        type: String
+    },
     phone: {
         type: String
     },
