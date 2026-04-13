@@ -19,9 +19,19 @@ const businessSchema = new mongoose.Schema({
         type: String,
     },
     image: {
-        type: String
+        type: [String],
+        default: []
     },
     address: {
+        type: String
+    },
+    city: {
+        type: String
+    },
+    state: {
+        type: String
+    },
+    zipCode: {
         type: String
     },
     phone: {
