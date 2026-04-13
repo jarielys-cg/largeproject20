@@ -82,7 +82,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(b.name),
-        backgroundColor: const Color(0xFF1976D2),
+        backgroundColor: const Color(0xFFF26B5B),
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(

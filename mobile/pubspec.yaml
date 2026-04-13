@@ -23,3 +23,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/Restaurant.jpg
+    - assets/images/Barber.jpg
+    - assets/images/HomeServices.jpg
+    - assets/images/Shopping.jpg
+    - assets/images/AutoServices.jpg

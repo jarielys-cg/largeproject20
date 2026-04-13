@@ -49,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  const Icon(Icons.store, size: 72, color: Color(0xFF1976D2)),
+                  const Icon(Icons.store, size: 72, color: Color(0xFFF26B5B)),
                   const SizedBox(height: 12),
                   const Text('BizMart', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
@@ -99,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: ElevatedButton(
                       onPressed: _loading ? null : _login,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1976D2),
+                        backgroundColor: const Color(0xFFF26B5B),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
@@ -115,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const Text("Don't have an account? "),
                       GestureDetector(
                         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SignupScreen())),
-                        child: const Text('Sign up', style: TextStyle(color: Color(0xFF1976D2), fontWeight: FontWeight.bold)),
+                        child: const Text('Sign up', style: TextStyle(color: Color(0xFFF26B5B), fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),

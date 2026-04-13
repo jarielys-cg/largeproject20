@@ -59,7 +59,7 @@ class _MyBusinessesScreenState extends State<MyBusinessesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Businesses'),
-        backgroundColor: const Color(0xFF1976D2),
+        backgroundColor: const Color(0xFFF26B5B),
         foregroundColor: Colors.white,
       ),
       floatingActionButton: FloatingActionButton(
@@ -67,7 +67,7 @@ class _MyBusinessesScreenState extends State<MyBusinessesScreen> {
           await Navigator.push(context, MaterialPageRoute(builder: (_) => const AddEditBusinessScreen()));
           _load();
         },
-        backgroundColor: const Color(0xFF1976D2),
+        backgroundColor: const Color(0xFFF26B5B),
         child: const Icon(Icons.add, color: Colors.white),
       ),
       body: _loading

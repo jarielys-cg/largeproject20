@@ -109,7 +109,7 @@ class _AddEditBusinessScreenState extends State<AddEditBusinessScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEditing ? 'Edit Business' : 'Add Business'),
-        backgroundColor: const Color(0xFF1976D2),
+        backgroundColor: const Color(0xFFF26B5B),
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -182,7 +182,7 @@ class _AddEditBusinessScreenState extends State<AddEditBusinessScreen> {
                 child: ElevatedButton(
                   onPressed: _loading ? null : _submit,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1976D2),
+                    backgroundColor: const Color(0xFFF26B5B),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
