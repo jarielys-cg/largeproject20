@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { MapPin, Phone, Globe, Pencil, Plus } from 'lucide-react'
 
 interface Props {
@@ -17,6 +17,14 @@ const BusinessInfo = ({ address, phone, websiteLink, onSaveWebsite, onSavePhone,
   const [tempWebsite, setTempWebsite] = useState(websiteLink ?? '')
   const [tempPhone, setTempPhone] = useState(phone ?? '')
   const [tempAddress, setTempAddress] = useState(address ?? '')
+
+  // sync temp values when active business changes
+  useEffect(() => {
+    setTempWebsite(websiteLink ?? '')
+    setTempPhone(phone ?? '')
+    setTempAddress(address ?? '')
+  }, [address, phone, websiteLink])
+
 
   return (
     <div className="w-72 shrink-0">
