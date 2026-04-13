@@ -11,11 +11,11 @@ const BusinessPhotos = ({ photos, uploading, onUpload, onRemove }: Props) => {
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-gray-900">Photos & Videos</h2>
+        <h2 className="text-lg font-bold text-gray-900">Photos</h2>
         <label className="flex items-center gap-2 text-sm text-bm-coral border border-bm-coral px-3 py-1.5 rounded-lg hover:bg-bm-coral hover:text-white transition-colors cursor-pointer">
           <Plus size={14} />
-          {uploading ? 'Uploading...' : 'Add Photo / Video'}
-          <input type="file" accept="image/*,video/*" multiple className="hidden" onChange={onUpload} />
+          {uploading ? 'Uploading...' : 'Add Photo'}
+          <input type="file" accept="image/*" multiple className="hidden" onChange={onUpload} />
         </label>
       </div>
       {photos.length > 0 ? (
@@ -35,7 +35,7 @@ const BusinessPhotos = ({ photos, uploading, onUpload, onRemove }: Props) => {
       ) : (
         <label className="flex flex-col items-center justify-center h-40 border-2 border-dashed border-gray-200 rounded-xl hover:border-bm-coral hover:bg-red-50 transition-colors cursor-pointer group">
           <ImagePlus size={28} className="text-gray-300 group-hover:text-bm-coral mb-2" />
-          <p className="text-sm text-gray-400 group-hover:text-bm-coral">Click to add photos and videos</p>
+          <p className="text-sm text-gray-400 group-hover:text-bm-coral">Click to add photos</p>
           <input type="file" accept="image/*,video/*" multiple className="hidden" onChange={onUpload} />
         </label>
       )}

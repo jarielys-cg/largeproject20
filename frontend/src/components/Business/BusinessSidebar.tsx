@@ -30,8 +30,19 @@ const BusinessSidebar = ({ businesses, activeBusiness, onSelectBusiness, onAddBu
         {activeBusiness ? (
           <>
             <h2 className="text-lg font-bold text-gray-900 mb-1">{activeBusiness.name}</h2>
-            <p className="text-sm text-gray-500">{activeBusiness.address}</p>
-            <p className="text-sm text-gray-500 mb-4">{activeBusiness.city}, {activeBusiness.state} {activeBusiness.zipCode}</p>
+            {activeBusiness.address && (
+              <p className="text-sm text-gray-500">{activeBusiness.address}</p>
+            )}
+            {(activeBusiness.city || activeBusiness.state || activeBusiness.zipCode) && (
+              <p className="text-sm text-gray-500 mb-4">
+                {[activeBusiness.city, activeBusiness.state, activeBusiness.zipCode]
+                  .filter(Boolean)
+                  .join(', ')}
+              </p>
+            )}
+            {!activeBusiness.address && !activeBusiness.city && (
+              <p className="text-sm text-gray-400 mb-4">No address added yet</p>
+            )}
           </>
         ) : (
           <p className="text-sm text-gray-400 mb-4">No business found</p>
