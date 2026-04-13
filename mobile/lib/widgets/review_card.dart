@@ -6,12 +6,14 @@ class ReviewCard extends StatelessWidget {
   final Review review;
   final String? currentUserId;
   final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
 
   const ReviewCard({
     super.key,
     required this.review,
     this.currentUserId,
     this.onDelete,
+    this.onEdit,
   });
 
   @override
@@ -30,13 +32,23 @@ class ReviewCard extends StatelessWidget {
               children: [
                 StarRating(rating: review.rating.toDouble()),
                 const Spacer(),
-                if (isOwner && onDelete != null)
-                  IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                    onPressed: onDelete,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
+                if (isOwner) ...[
+                  if (onEdit != null)
+                    IconButton(
+                      icon: const Icon(Icons.edit_outlined, size: 20, color: Color(0xFFF26B5B)),
+                      onPressed: onEdit,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  const SizedBox(width: 8),
+                  if (onDelete != null)
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                      onPressed: onDelete,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                ],
               ],
             ),
             const SizedBox(height: 8),

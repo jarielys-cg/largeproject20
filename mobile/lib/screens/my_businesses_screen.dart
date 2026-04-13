@@ -45,7 +45,7 @@ class _MyBusinessesScreenState extends State<MyBusinessesScreen> {
       ),
     );
     if (confirmed != true) return;
-    final result = await ApiService.removeBusiness(b.id);
+    final result = await ApiService.removeBusiness(b.name);
     if (!mounted) return;
     if (result['success']) {
       _load();

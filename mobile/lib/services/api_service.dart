@@ -78,18 +78,32 @@ class ApiService {
     return {'success': false, 'error': data['error'] ?? 'Failed to update business'};
   }
 
-  static Future<Map<String, dynamic>> removeBusiness(String id) async {
+  static Future<Map<String, dynamic>> removeBusiness(String name) async {
     final headers = await _authHeaders();
     final response = await http.delete(
       Uri.parse('$baseUrl/removeB'),
       headers: headers,
-      body: jsonEncode({'id': id}),
+      body: jsonEncode({'name': name}),
     );
     final data = jsonDecode(response.body);
     if (response.statusCode == 200) {
       return {'success': true};
     }
     return {'success': false, 'error': data['error'] ?? 'Failed to remove business'};
+  }
+
+  static Future<Map<String, dynamic>> updateReview(String reviewId, int rating, String review) async {
+    final headers = await _authHeaders();
+    final response = await http.put(
+      Uri.parse('$baseUrl/reviews/$reviewId'),
+      headers: headers,
+      body: jsonEncode({'rating': rating, 'review': review}),
+    );
+    final data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return {'success': true};
+    }
+    return {'success': false, 'error': data['message'] ?? 'Failed to update review'};
   }
 
   static Future<Map<String, dynamic>> getReviews(String businessId, {int page = 1}) async {

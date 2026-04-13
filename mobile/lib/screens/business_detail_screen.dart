@@ -54,6 +54,55 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
     });
   }
 
+  Future<void> _editReview(Review review) async {
+    final reviewCtrl = TextEditingController(text: review.review);
+    int rating = review.rating;
+    await showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setStateDialog) => AlertDialog(
+          title: const Text('Edit Review'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: List.generate(5, (i) => GestureDetector(
+                  onTap: () => setStateDialog(() => rating = i + 1),
+                  child: Icon(i < rating ? Icons.star : Icons.star_border, color: Colors.amber, size: 32),
+                )),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: reviewCtrl,
+                maxLines: 4,
+                decoration: const InputDecoration(border: OutlineInputBorder(), hintText: 'Your review...'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(ctx);
+                final result = await ApiService.updateReview(review.id, rating, reviewCtrl.text.trim());
+                if (!mounted) return;
+                if (result['success']) {
+                  _loadReviews();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result['error'])));
+                }
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF26B5B), foregroundColor: Colors.white),
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
+    reviewCtrl.dispose();
+  }
+
   Future<void> _deleteReview(String reviewId) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -125,7 +174,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                   if (b.description != null && b.description!.isNotEmpty)
                     Text(b.description!, style: const TextStyle(fontSize: 15)),
                   const SizedBox(height: 12),
-                  if (b.address != null) _infoRow(Icons.location_on_outlined, '${b.address}, ${b.city ?? ''}, ${b.state ?? ''} ${b.zipCode ?? ''}'),
+                  if (b.address != null) _infoRow(Icons.location_on_outlined, '${b.address}, ${b.city ?? ''}, ${b.state ?? ''} ${b.zipCode?.toString() ?? ''}'),
                   if (b.phone != null) _infoRow(Icons.phone_outlined, b.phone!),
                   if (b.websiteLink != null) _infoRow(Icons.link, b.websiteLink!),
                 ],
@@ -160,6 +209,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                   ..._reviews.map((r) => ReviewCard(
                     review: r,
                     currentUserId: _user?.id,
+                    onEdit: () => _editReview(r),
                     onDelete: () => _deleteReview(r.id),
                   )),
                   if (_reviewPage < _totalReviewPages)
@@ -170,7 +220,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                         child: const Text('Load more reviews'),
                       ),
                     ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: MediaQuery.of(context).padding.bottom + 24),
                 ],
               ),
           ],
