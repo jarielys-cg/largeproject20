@@ -8,7 +8,7 @@ class Business {
   final String? address;
   final String? city;
   final String? state;
-  final String? zipCode;
+  final int? zipCode;
   final String? phone;
   final String? websiteLink;
   final int reviewCount;
@@ -42,7 +42,7 @@ class Business {
       address: json['address'],
       city: json['city'],
       state: json['state'],
-      zipCode: json['zipCode'],
+      zipCode: json['zipCode'] != null ? int.tryParse(json['zipCode'].toString()) : null,
       phone: json['phone'],
       websiteLink: json['websiteLink'],
       reviewCount: json['reviewCount'] ?? 0,

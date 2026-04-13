@@ -37,7 +37,7 @@ class _AddEditBusinessScreenState extends State<AddEditBusinessScreen> {
     _addressCtrl = TextEditingController(text: b?.address ?? '');
     _cityCtrl = TextEditingController(text: b?.city ?? '');
     _stateCtrl = TextEditingController(text: b?.state ?? '');
-    _zipCtrl = TextEditingController(text: b?.zipCode ?? '');
+    _zipCtrl = TextEditingController(text: b?.zipCode?.toString() ?? '');
     _phoneCtrl = TextEditingController(text: b?.phone ?? '');
     _websiteCtrl = TextEditingController(text: b?.websiteLink ?? '');
     _categoryCtrl = TextEditingController();
@@ -83,7 +83,7 @@ class _AddEditBusinessScreenState extends State<AddEditBusinessScreen> {
       'address': _addressCtrl.text.trim(),
       'city': _cityCtrl.text.trim(),
       'state': _stateCtrl.text.trim(),
-      'zipCode': _zipCtrl.text.trim(),
+      'zipCode': int.tryParse(_zipCtrl.text.trim()),
       'phone': _phoneCtrl.text.trim(),
       'websiteLink': _websiteCtrl.text.trim(),
     };
@@ -109,7 +109,7 @@ class _AddEditBusinessScreenState extends State<AddEditBusinessScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEditing ? 'Edit Business' : 'Add Business'),
-        backgroundColor: const Color(0xFF1976D2),
+        backgroundColor: const Color(0xFFF26B5B),
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -182,7 +182,7 @@ class _AddEditBusinessScreenState extends State<AddEditBusinessScreen> {
                 child: ElevatedButton(
                   onPressed: _loading ? null : _submit,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1976D2),
+                    backgroundColor: const Color(0xFFF26B5B),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),

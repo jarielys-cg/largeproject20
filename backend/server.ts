@@ -27,8 +27,8 @@ mongoose.connect(uri)
 //middleware
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:5173',  // your frontend URL
-  credentials: true                  // allow cookies/auth headers
+  origin: '*',
+  credentials: false
 }))
 
 //API's:
