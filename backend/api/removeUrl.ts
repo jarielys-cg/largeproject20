@@ -1,6 +1,19 @@
 import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import Business from "../models/Business.js";
+import dotenv from "dotenv";
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+
+dotenv.config();
+
+const s3 = new S3Client({
+  region: "us-east-1", // required but ignored by Spaces
+  endpoint: "https://sfo3.digitaloceanspaces.com",
+  credentials: {
+    accessKeyId: process.env.SPACES_KEY!,
+    secretAccessKey: process.env.SPACES_SECRET!,
+  },
+});
 
 export const removeUrl = async (req: Request, res: Response) => 
 {
@@ -38,6 +51,23 @@ export const removeUrl = async (req: Request, res: Response) =>
         }
 
         await existingBusiness.save();
+
+        if (result.modifiedCount > 0) 
+        {
+            try
+            {
+                await s3.send(
+                new DeleteObjectCommand({
+                Bucket: "marketplacegroup20",
+                Key: key,
+                })
+            );
+            }
+            catch
+            {
+                return res.status(400).json({ error: "Failed to remove from cloud" });
+            }
+        }
         res.status(200).json({ success: "Successfully deleted" });
     }
     catch
