@@ -89,7 +89,7 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
 
   return (
     <>
-      <nav className="w-full bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-4 relative z-10">
+      <nav className="w-full bg-white border-b border-gray-200 px-6 py-3 flex flex-wrap items-center gap-4 relative z-10">
         {/* Logo */}
         <div
           className="flex items-center gap-2 cursor-pointer shrink-0"
@@ -101,29 +101,27 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
           </span>
         </div>
 
-        {isLoggedIn && (
-          <form
-            onSubmit={handleSearchSubmit}
-            className="hidden md:flex flex-1 max-w-2xl mx-4"
-          >
-            <div className="w-full flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden focus-within:border-bm-coral transition-colors">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search businesses, categories, or services"
-                className="w-full px-4 py-2 text-sm text-gray-700 focus:outline-none"
-              />
-              <button
-                type="submit"
-                className="px-3 py-2 text-gray-500 hover:text-bm-coral transition-colors"
-                aria-label="Search"
-              >
-                <Search size={18} />
-              </button>
-            </div>
-          </form>
-        )}
+        <form
+          onSubmit={handleSearchSubmit}
+          className="order-3 basis-full md:order-none md:flex md:flex-1 md:max-w-2xl md:mx-4"
+        >
+          <div className="w-full flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden focus-within:border-bm-coral transition-colors">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search businesses, categories, or services"
+              className="w-full px-4 py-2 text-sm text-gray-700 focus:outline-none"
+            />
+            <button
+              type="submit"
+              className="px-3 py-2 text-gray-500 hover:text-bm-coral transition-colors"
+              aria-label="Search"
+            >
+              <Search size={18} />
+            </button>
+          </div>
+        </form>
 
         {/* Right side */}
         <div className="flex items-center gap-4 shrink-0 ml-auto">
