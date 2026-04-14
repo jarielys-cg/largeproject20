@@ -1,16 +1,9 @@
 import type { Request, Response } from "express";
 import crypto from "crypto";
-import nodemailer from "nodemailer";
+import sgMail from "@sendgrid/mail";
 import User from "../models/User.js";
 
-// email transporter
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // 1. SEND RESET EMAIL
 export const forgotPassword = async (req: Request, res: Response) => {
@@ -18,7 +11,6 @@ export const forgotPassword = async (req: Request, res: Response) => {
     const { email } = req.body;
 
     const existingUser = await User.findOne({ email });
-
     if (!existingUser) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -28,14 +20,13 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
     existingUser.resetPasswordToken = resetToken;
     existingUser.resetPasswordExpires = resetExpires;
-
     await existingUser.save();
 
     const resetLink = `http://colors-lab-cop4331c.xyz/resetPassword/${resetToken}`;
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+    const msg = {
       to: existingUser.email,
+      from: process.env.EMAIL_FROM, // must be your authenticated domain
       subject: "Reset Your Password",
       html: `
         <h2>Password Reset</h2>
@@ -43,10 +34,13 @@ export const forgotPassword = async (req: Request, res: Response) => {
         <a href="${resetLink}">${resetLink}</a>
         <p>This link expires in 15 minutes.</p>
       `
-    });
+    };
+
+    await sgMail.send(msg);
 
     return res.status(200).json({ message: "Password reset email sent" });
-  } catch {
+  } catch (err) {
+    console.error("SENDGRID ERROR:", err.response?.body || err);
     return res.status(500).json({ error: "Error sending reset email" });
   }
 };
