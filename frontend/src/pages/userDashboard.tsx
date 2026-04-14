@@ -49,15 +49,14 @@ const DashboardPage = () => {
       {/* Dashboard Page Wrapper */}
       <Navbar />
 
-      <main className="mx-auto max-w-7xl px-6 py-8">
+      <main className="mx-auto max-w-8xl px-6 py-8">
         <section className="overflow-hidden rounded-2xl bg-white shadow">
           {loading ? (
             <div className="flex items-center justify-center py-16 text-sm text-gray-500">
-              {/* Loading State Container */}
-              Loading businesses...
+              <div className="w-8 h-8 border-2 border-bm-coral border-t-transparent rounded-full animate-spin" />
             </div>
           ) : businesses.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               {/* Business Cards Grid Container */}
               {businesses.map((business) => (
                 <BusinessCard
