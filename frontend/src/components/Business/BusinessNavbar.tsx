@@ -31,7 +31,7 @@ const BusinessNavbar = ({ owner, onLogout }: Props) => {
 
   return (
     <nav className="w-full bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between relative z-10">
-      <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
+      <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/business/dashboard')}>
         <img src={logo} alt="BizMart logo" className="w-9 h-9" />
         <div>
           <span className="text-lg font-bold text-bm-dark">Biz<span className="text-bm-coral">Mart</span></span>

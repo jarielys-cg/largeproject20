@@ -19,9 +19,19 @@ interface NavbarProps {
 
 const Navbar = ({ onLoginClick }: NavbarProps) => {
   const routeLocation = useLocation();
-  const username = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user") as string).username
-    : null;
+  const getStoredUser = () => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return null;
+
+    try {
+      return JSON.parse(storedUser);
+    } catch {
+      return null;
+    }
+  };
+
+  const parsedUser = getStoredUser();
+  const username = parsedUser?.username ?? null;
 
   const navigate = useNavigate();
   const [bizDropdownOpen, setBizDropdownOpen] = useState(false);
@@ -64,7 +74,14 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
   };
 
   const handleLogoClick = () => {
-    navigate(isLoggedIn ? "/dashboard" : "/");
+    const hasToken = Boolean(localStorage.getItem("token"));
+    if (!hasToken) {
+      navigate("/");
+      return;
+    }
+
+    const latestUser = getStoredUser();
+    navigate(latestUser?.isBusinessOwner ? "/business/dashboard" : "/dashboard");
   };
 
   useEffect(() => {
