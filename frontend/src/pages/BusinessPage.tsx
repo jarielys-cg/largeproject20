@@ -87,10 +87,10 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
         </div>
         )}
 
-      <div className="max-w-6xl mx-auto px-6 py-8 flex gap-8">
+      <div className="max-w-6xl mx-auto flex min-w-0 gap-8 px-6 py-8">
 
         {/* Main content */}
-        <div className="flex-1 space-y-6">
+        <div className="min-w-0 flex-1 space-y-6">
 
           {/* Business header */}
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
@@ -177,7 +177,7 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
             ) : (
               <div className="space-y-4">
                 {reviews.map(review => (
-                  <div key={review._id} className="pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+                  <div key={review._id} className="min-w-0 border-b border-gray-100 pb-4 last:border-0 last:pb-0">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-bm-gray flex items-center justify-center shrink-0">
@@ -203,7 +203,9 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
                         ))}
                       </div>
                     </div>
-                    <p className="text-sm text-gray-700 leading-relaxed ml-12">{review.review}</p>
+                    <p className="w-full min-w-0 pl-12 text-sm leading-relaxed text-gray-700 break-words break-normal [overflow-wrap:break-word]">
+                      {review.review}
+                    </p>
                   </div>
                 ))}
               </div>
