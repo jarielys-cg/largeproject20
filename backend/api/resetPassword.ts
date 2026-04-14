@@ -31,7 +31,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
     await existingUser.save();
 
-    const resetLink = `http://64.23.138.213/reset-password/${resetToken}`;
+    const resetLink = `http://colors-lab-cop4331c.xyz/resetPassword/${resetToken}`;
 
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
@@ -52,7 +52,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
 };
 
 // 2. RESET PASSWORD USING TOKEN
-export const passwordReset = async (req: Request, res: Response) => {
+export const resetPassword = async (req: Request, res: Response) => {
   try {
     const { token } = req.params;
     const { password } = req.body;
