@@ -46,7 +46,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
     });
 
     return res.status(200).json({ message: "Password reset email sent" });
-  } catch (error) {
+  } catch {
     return res.status(500).json({ error: "Error sending reset email" });
   }
 };
@@ -76,7 +76,7 @@ export const passwordReset = async (req: Request, res: Response) => {
     const { password: removedPassword, ...sanitizedUser } = savedUser.toObject();
 
     return res.status(200).json({ savedUser: sanitizedUser });
-  } catch (error) {
+  } catch {
     return res.status(400).json({ error: "Error updating password" });
   }
 };
