@@ -32,6 +32,7 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
 
   const parsedUser = getStoredUser();
   const username = parsedUser?.username ?? null;
+  const isBusinessOwner = Boolean(parsedUser?.isBusinessOwner);
 
   const navigate = useNavigate();
   const [bizDropdownOpen, setBizDropdownOpen] = useState(false);
@@ -215,7 +216,7 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
             </div>
           )}
 
-          {isLoggedIn && (
+          {isLoggedIn && !isBusinessOwner && (
             <button
               onClick={() => navigate("/write-review")}
               className="text-sm font-medium text-gray-700 hover:text-bm-coral whitespace-nowrap"

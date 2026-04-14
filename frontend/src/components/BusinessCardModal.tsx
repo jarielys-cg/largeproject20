@@ -22,6 +22,17 @@ const BusinessCardModal = ({
 
   const primaryImage = business.image?.[0];
   const isLoggedIn = Boolean(localStorage.getItem("token"));
+  let parsedUser: { isBusinessOwner?: boolean } | null = null;
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    try {
+      parsedUser = JSON.parse(storedUser);
+    } catch {
+      parsedUser = null;
+    }
+  }
+  const isBusinessOwner = Boolean(parsedUser?.isBusinessOwner);
+  const canWriteReview = isLoggedIn && !isBusinessOwner;
   const categoryText = Array.isArray(business.category)
     ? business.category.length
       ? business.category.join(", ")
@@ -214,7 +225,7 @@ const BusinessCardModal = ({
                 </div>
               </div>
 
-              {isLoggedIn && (
+              {canWriteReview && (
                 <button
                   type="button"
                   onClick={() => {

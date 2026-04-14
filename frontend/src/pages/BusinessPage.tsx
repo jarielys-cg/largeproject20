@@ -22,6 +22,17 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
   const [reviewsLoading, setReviewsLoading] = useState(true)
   const [expandedImage, setExpandedImage] = useState<string | null>(null)
   const isLoggedIn = Boolean(localStorage.getItem('token'))
+  let parsedUser: { isBusinessOwner?: boolean } | null = null
+  const storedUser = localStorage.getItem('user')
+  if (storedUser) {
+    try {
+      parsedUser = JSON.parse(storedUser)
+    } catch {
+      parsedUser = null
+    }
+  }
+  const isBusinessOwner = Boolean(parsedUser?.isBusinessOwner)
+  const canWriteReview = isLoggedIn && !isBusinessOwner
   const heroImage = business?.image?.find((photo) => photo && photo.trim() !== '') ?? null
 
   useEffect(() => {
@@ -143,7 +154,7 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
               </div>
 
               {/* Write review button */}
-              {isLoggedIn && (
+              {canWriteReview && (
                 <button
                   onClick={() => navigate(`/review/${businessId}`)}
                   className="bg-bm-coral hover:bg-bm-coral-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors shrink-0"
@@ -175,7 +186,7 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
               <div className="text-center py-10">
                 <Star size={32} className="text-gray-200 mx-auto mb-3" />
                 <p className="text-gray-400 text-sm">No reviews yet — be the first to review!</p>
-                {isLoggedIn && (
+                {canWriteReview && (
                   <button
                     onClick={() => navigate(`/review/${businessId}`)}
                     className="mt-4 text-sm text-bm-coral border border-bm-coral px-4 py-2 rounded-lg hover:bg-bm-coral hover:text-white transition-colors"
