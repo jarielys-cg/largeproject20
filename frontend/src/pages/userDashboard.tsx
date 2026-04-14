@@ -7,8 +7,11 @@ import api from "../lib/axios";
 import { useSearchParams } from "react-router";
 import type { Business } from "../types";
 
+interface DashboardPageProps {
+  onLoginClick?: () => void;
+}
 
-const DashboardPage = () => {
+const DashboardPage = ({ onLoginClick }: DashboardPageProps) => {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
@@ -68,7 +71,7 @@ const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-[#f7f7f7]">
       {/* Dashboard Page Wrapper */}
-      <Navbar />
+      <Navbar onLoginClick={onLoginClick} />
 
       <main className="mx-auto max-w-8xl px-6 py-8">
         <section className="overflow-hidden rounded-2xl bg-white shadow">

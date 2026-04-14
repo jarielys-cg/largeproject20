@@ -57,7 +57,7 @@ function App() {
         <Route path="/business/reviews/:businessId" element={<BusinessReviews />} />
         <Route path="/business/:businessId" element={<BusinessPage onLoginClick={() => setLoginModalOpen(true)} />} />
         <Route path="/search" element={<SearchRedirect />} />
-        <Route path="/dashboard" element={<UserDashboard />} />
+        <Route path="/dashboard" element={<UserDashboard onLoginClick={() => setLoginModalOpen(true)} />} />
       </Routes>
 
      
