@@ -85,7 +85,7 @@ const BusinessNavbar = ({ owner, onLogout }: Props) => {
               className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
             >
               <LayoutDashboard size={16} className="text-gray-500" />
-              Dashboard
+              User Dashboard
             </button>
             <div className="h-px bg-gray-100" />
             <button className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">

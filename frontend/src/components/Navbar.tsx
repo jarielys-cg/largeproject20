@@ -281,7 +281,7 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
                     className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-bm-gray hover:text-bm-coral transition-colors text-left"
                   >
                     <LayoutDashboard size={16} color="currentColor" />
-                    Dashboard
+                    User Dashboard
                   </button>
                   <div className="h-px bg-gray-100"></div>
                   <button
