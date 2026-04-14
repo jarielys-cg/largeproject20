@@ -75,7 +75,11 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
                   hintText: 'Share your experience...',
                   border: OutlineInputBorder(),
                 ),
-                validator: (v) => v == null || v.trim().isEmpty ? 'Please write a review' : null,
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) return 'Please write a review';
+                  if (v.trim().length < 80) return 'Review must be at least 80 characters (${v.trim().length}/80)';
+                  return null;
+                },
               ),
               if (_error != null)
                 Padding(

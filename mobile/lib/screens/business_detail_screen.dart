@@ -76,7 +76,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
               TextField(
                 controller: reviewCtrl,
                 maxLines: 4,
-                decoration: const InputDecoration(border: OutlineInputBorder(), hintText: 'Your review...'),
+                decoration: const InputDecoration(border: OutlineInputBorder(), hintText: 'Your review (min 80 characters)...'),
               ),
             ],
           ),
@@ -84,6 +84,10 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
             TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
             ElevatedButton(
               onPressed: () async {
+                if (reviewCtrl.text.trim().length < 80) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Review must be at least 80 characters')));
+                  return;
+                }
                 Navigator.pop(ctx);
                 final result = await ApiService.updateReview(review.id, rating, reviewCtrl.text.trim());
                 if (!mounted) return;

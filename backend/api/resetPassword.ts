@@ -51,8 +51,10 @@ export const resetPassword = async (req: Request, res: Response) => {
     const { token } = req.params;
     const { password } = req.body;
 
+    if (!token) return res.status(400).json({ error: "Invalid token" });
+
     const existingUser = await User.findOne({
-      resetPasswordToken: token,
+      resetPasswordToken: token as string,
       resetPasswordExpires: { $gt: new Date() }
     });
 
@@ -61,10 +63,10 @@ export const resetPassword = async (req: Request, res: Response) => {
     }
 
     existingUser.password = password;
-    existingUser.resetPasswordToken = null;
-    existingUser.resetPasswordExpires = null;
+    existingUser.resetPasswordToken = undefined;
+    existingUser.resetPasswordExpires = undefined;
 
-    const savedUser = await existingUser.save();
+    const savedUser = await (existingUser as any).save();
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: removedPassword, ...sanitizedUser } = savedUser.toObject();

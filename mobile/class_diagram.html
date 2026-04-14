@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BizMart Mobile Class Diagram</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    body { font-family: sans-serif; background: #f9f9f9; padding: 20px; }
+    h2 { text-align: center; color: #1976D2; }
+    .mermaid { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .save-btn {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 28px;
+      background: #1976D2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .save-btn:hover { background: #1565C0; }
+  </style>
+</head>
+<body>
+  <h2>BizMart Mobile — Class Diagram</h2>
+  <button class="save-btn" onclick="savePNG()">Download as PNG</button>
+  <button class="save-btn" onclick="saveSVG()">Download as SVG</button>
+  <div class="mermaid">
+classDiagram
+
+    class BizMartApp {
+        +build(context) Widget
+    }
+
+    class SplashScreen {
+        -_checkAuth()
+    }
+
+    class LoginScreen {
+        -String _email
+        -String _password
+        -bool _loading
+        -bool _obscure
+        -String _error
+        -_login()
+    }
+
+    class SignupScreen {
+        -String _firstName
+        -String _lastName
+        -String _username
+        -String _email
+        -String _password
+        -String _zip
+        -bool _isBusinessOwner
+        -_signUp()
+    }
+
+    class HomeScreen {
+        -List~Business~ _businesses
+        -bool _loading
+        -int _page
+        -int _totalPages
+        -User _user
+        -_loadUser()
+        -_search(query, page)
+        -_logout()
+    }
+
+    class BusinessDetailScreen {
+        -Business business
+        -List~Review~ _reviews
+        -bool _loadingReviews
+        -int _reviewPage
+        -int _totalReviewPages
+        -User _user
+        -_loadReviews(page)
+        -_deleteReview(reviewId)
+    }
+
+    class MyBusinessesScreen {
+        -List~Business~ _businesses
+        -bool _loading
+        -_load()
+        -_delete(business)
+    }
+
+    class AddEditBusinessScreen {
+        -Business business
+        -List~String~ _categories
+        -bool _loading
+        -bool _isEditing
+        -_addCategory()
+        -_submit()
+    }
+
+    class WriteReviewScreen {
+        -Business business
+        -String _review
+        -int _rating
+        -bool _loading
+        -_submit()
+    }
+
+    class BusinessCard {
+        -Business business
+        -VoidCallback onTap
+        +build(context) Widget
+    }
+
+    class ReviewCard {
+        -Review review
+        -String currentUserId
+        -VoidCallback onDelete
+        +build(context) Widget
+    }
+
+    class StarRating {
+        -double rating
+        -double size
+        +build(context) Widget
+    }
+
+    class User {
+        +String id
+        +String firstName
+        +String lastName
+        +String username
+        +String email
+        +bool isBusinessOwner
+        +int zipCode
+        +fromJson(json) User
+    }
+
+    class Business {
+        +String id
+        +String name
+        +String ownerId
+        +List~String~ category
+        +String description
+        +List~String~ image
+        +String address
+        +String city
+        +String state
+        +String zipCode
+        +String phone
+        +String websiteLink
+        +int reviewCount
+        +double averageReviewScore
+        +fromJson(json) Business
+        +toJson() Map
+    }
+
+    class Review {
+        +String id
+        +String businessId
+        +String userId
+        +int rating
+        +String review
+        +DateTime createdAt
+        +fromJson(json) Review
+    }
+
+    class AuthService {
+        +getToken() String
+        +getCachedUser() User
+        +login(email, password) Map
+        +signUp(firstName, lastName, username, email, password, isBusinessOwner, zipCode) Map
+        +logout()
+    }
+
+    class ApiService {
+        +searchBusinesses(query, page) Map
+        +getBusinessById(id) Business
+        +getMyBusinesses() List~Business~
+        +addBusiness(body) Map
+        +editBusiness(id, body) Map
+        +removeBusiness(id) Map
+        +getReviews(businessId, page) Map
+        +addReview(businessId, rating, review) Map
+        +deleteReview(reviewId) Map
+    }
+
+    BizMartApp --> SplashScreen
+    SplashScreen --> LoginScreen
+    SplashScreen --> HomeScreen
+    LoginScreen --> HomeScreen
+    LoginScreen --> SignupScreen
+    SignupScreen --> HomeScreen
+    HomeScreen --> BusinessDetailScreen
+    HomeScreen --> MyBusinessesScreen
+    HomeScreen --> AuthService
+    HomeScreen --> ApiService
+    HomeScreen --> BusinessCard
+    BusinessDetailScreen --> WriteReviewScreen
+    BusinessDetailScreen --> ApiService
+    BusinessDetailScreen --> ReviewCard
+    BusinessDetailScreen --> StarRating
+    MyBusinessesScreen --> AddEditBusinessScreen
+    MyBusinessesScreen --> ApiService
+    MyBusinessesScreen --> BusinessCard
+    WriteReviewScreen --> ApiService
+    AddEditBusinessScreen --> ApiService
+    BusinessCard --> Business
+    BusinessCard --> StarRating
+    ReviewCard --> Review
+    ReviewCard --> StarRating
+    AuthService --> User
+    ApiService --> Business
+    ApiService --> Review
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'default' });
+
+    function saveSVG() {
+      const svg = document.querySelector('.mermaid svg');
+      if (!svg) { alert('Diagram not rendered yet, please wait a moment.'); return; }
+      const data = new XMLSerializer().serializeToString(svg);
+      const blob = new Blob([data], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'bizmart_class_diagram.svg';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function savePNG() {
+      const svg = document.querySelector('.mermaid svg');
+      if (!svg) { alert('Diagram not rendered yet, please wait a moment.'); return; }
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const canvas = document.createElement('canvas');
+      const scale = 2;
+      const rect = svg.getBoundingClientRect();
+      canvas.width = rect.width * scale;
+      canvas.height = rect.height * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const img = new Image();
+      const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      img.onload = () => {
+        ctx.scale(scale, scale);
+        ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
+        const a = document.createElement('a');
+        a.download = 'bizmart_class_diagram.png';
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+      };
+      img.src = url;
+    }
+  </script>
+</body>
+</html>
