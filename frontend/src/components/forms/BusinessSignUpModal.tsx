@@ -9,8 +9,7 @@ const CATEGORIES = [
   'Shopping',
   'Automotive',
   'Home Services',
-  'Beauty & Spas',
-  'Other'
+  'Beauty & Spas'
 ]
 
 const BusinessSignUpModal = ({ isOpen, onClose, skipAccountStep = false, onSuccess }: BusinessSignUpModalProps) => {
@@ -50,13 +49,20 @@ const BusinessSignUpModal = ({ isOpen, onClose, skipAccountStep = false, onSucce
 
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault()
+
+  const ownerNameParts = form.ownerName.trim().split(/\s+/).filter(Boolean)
+  if (!skipAccountStep && ownerNameParts.length < 2) {
+    toast.error('Please enter your full name (first and last name)')
+    return
+  }
+
   setLoading(true)
   try {
     if (!skipAccountStep) {
       //create the user account (new business owner signing up)
       await api.post('/signup', {
-        firstName: form.ownerName.split(' ')[0],
-        lastName: form.ownerName.split(' ')[1] || '',
+        firstName: ownerNameParts[0],
+        lastName: ownerNameParts.slice(1).join(' '),
         email: form.email,
         password: form.password,
         username: form.email.split('@')[0],
@@ -259,8 +265,8 @@ const handleSubmit = async (e: React.FormEvent) => {
                 <input
                   name="ownerName" type="text" required value={form.ownerName}
                   onChange={handleChange} placeholder="Jane Smith"
-                  pattern="[A-Za-z\s]+"
-                  title="Name can only contain letters"
+                  pattern="[A-Za-z]+(\s+[A-Za-z]+)+"
+                  title="Please enter first and last name using letters only"
                   className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-bm-coral bg-white"
                 />
               </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { Star, MapPin, Phone, Globe, Store} from 'lucide-react'
+import { Star, MapPin, Phone, Globe, Store, X } from 'lucide-react'
 import api from '../lib/axios'
 import Navbar from '../components/Navbar'
 import type { Business, Review } from '../types'
@@ -20,6 +20,20 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
   const [totalReviews, setTotalReviews] = useState(0)
   const [loading, setLoading] = useState(true)
   const [reviewsLoading, setReviewsLoading] = useState(true)
+  const [expandedImage, setExpandedImage] = useState<string | null>(null)
+  const isLoggedIn = Boolean(localStorage.getItem('token'))
+  let parsedUser: { isBusinessOwner?: boolean } | null = null
+  const storedUser = localStorage.getItem('user')
+  if (storedUser) {
+    try {
+      parsedUser = JSON.parse(storedUser)
+    } catch {
+      parsedUser = null
+    }
+  }
+  const isBusinessOwner = Boolean(parsedUser?.isBusinessOwner)
+  const canWriteReview = isLoggedIn && !isBusinessOwner
+  const heroImage = business?.image?.find((photo) => photo && photo.trim() !== '') ?? null
 
   useEffect(() => {
     const fetchBusiness = async () => {
@@ -67,30 +81,33 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
       <Navbar onLoginClick={onLoginClick} />
 
       {/* Hero — photos */}
-      {business?.image && business.image.filter(p => p && p.trim() !== '').length > 0 ? (
-        <div className="flex h-full">
-            {business.image
-            .filter(p => p && p.trim() !== '')  // ← filter empty strings
-            .slice(0, 3)
-            .map((photo, i) => (
-                <img
-                key={i}
-                src={photo}
-                alt=""
-                className={`h-full object-cover ${business.image!.filter(p => p).length === 1 ? 'w-full' : 'flex-1'}`}
-                />
-            ))}
+      {heroImage ? (
+        <div className="h-64 w-full overflow-hidden bg-gray-100 sm:h-80">
+          <img
+            src={heroImage}
+            alt={business?.name ?? 'Business'}
+            role="button"
+            tabIndex={0}
+            onClick={() => setExpandedImage(heroImage)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                setExpandedImage(heroImage)
+              }
+            }}
+            className="h-full w-full cursor-zoom-in object-cover"
+          />
         </div>
-        ) : (
-        <div className="w-full h-full bg-bm-gray flex items-center justify-center">
-            <Store size={48} className="text-gray-300" />
+      ) : (
+        <div className="flex h-64 w-full items-center justify-center bg-bm-gray sm:h-80">
+          <Store size={48} className="text-gray-300" />
         </div>
-        )}
+      )}
 
-      <div className="max-w-6xl mx-auto px-6 py-8 flex gap-8">
+      <div className="max-w-6xl mx-auto flex min-w-0 gap-8 px-6 py-8">
 
         {/* Main content */}
-        <div className="flex-1 space-y-6">
+        <div className="min-w-0 flex-1 space-y-6">
 
           {/* Business header */}
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
@@ -137,12 +154,14 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
               </div>
 
               {/* Write review button */}
-              <button
-                onClick={() => navigate(`/review/${businessId}`)}
-                className="bg-bm-coral hover:bg-bm-coral-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors shrink-0"
-              >
-                Write a Review
-              </button>
+              {canWriteReview && (
+                <button
+                  onClick={() => navigate(`/review/${businessId}`)}
+                  className="bg-bm-coral hover:bg-bm-coral-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors shrink-0"
+                >
+                  Write a Review
+                </button>
+              )}
             </div>
 
             {/* Description */}
@@ -167,17 +186,19 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
               <div className="text-center py-10">
                 <Star size={32} className="text-gray-200 mx-auto mb-3" />
                 <p className="text-gray-400 text-sm">No reviews yet — be the first to review!</p>
-                <button
-                  onClick={() => navigate(`/review/${businessId}`)}
-                  className="mt-4 text-sm text-bm-coral border border-bm-coral px-4 py-2 rounded-lg hover:bg-bm-coral hover:text-white transition-colors"
-                >
-                  Write a Review
-                </button>
+                {canWriteReview && (
+                  <button
+                    onClick={() => navigate(`/review/${businessId}`)}
+                    className="mt-4 text-sm text-bm-coral border border-bm-coral px-4 py-2 rounded-lg hover:bg-bm-coral hover:text-white transition-colors"
+                  >
+                    Write a Review
+                  </button>
+                )}
               </div>
             ) : (
               <div className="space-y-4">
                 {reviews.map(review => (
-                  <div key={review._id} className="pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+                  <div key={review._id} className="min-w-0 border-b border-gray-100 pb-4 last:border-0 last:pb-0">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-bm-gray flex items-center justify-center shrink-0">
@@ -203,7 +224,9 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
                         ))}
                       </div>
                     </div>
-                    <p className="text-sm text-gray-700 leading-relaxed ml-12">{review.review}</p>
+                    <p className="w-full min-w-0 pl-12 text-sm leading-relaxed text-gray-700 break-words break-normal [overflow-wrap:break-word]">
+                      {review.review}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -283,7 +306,20 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
                     .slice(0, 4)
                     .map((photo, i) => (
                     <div key={i} className="aspect-square rounded-lg overflow-hidden">
-                        <img src={photo} alt="" className="w-full h-full object-cover" />
+                        <img
+                          src={photo}
+                          alt={`${business.name} ${i + 1}`}
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => setExpandedImage(photo)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault()
+                              setExpandedImage(photo)
+                            }
+                          }}
+                          className="h-full w-full cursor-zoom-in object-cover"
+                        />
                     </div>
                     ))}
                 </div>
@@ -292,6 +328,32 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
 
         </div>
       </div>
+
+      {expandedImage && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 px-4 py-6"
+          onClick={() => setExpandedImage(null)}
+        >
+          <div
+            className="relative max-h-[90vh] max-w-[95vw]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setExpandedImage(null)}
+              className="absolute -right-3 -top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white text-gray-700 shadow-lg transition-colors hover:text-bm-coral"
+              aria-label="Close expanded image"
+            >
+              <X size={20} />
+            </button>
+            <img
+              src={expandedImage}
+              alt={`${business?.name ?? 'Business'} expanded view`}
+              className="max-h-[90vh] max-w-[95vw] rounded-2xl object-contain shadow-2xl"
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

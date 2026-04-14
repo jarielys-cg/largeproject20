@@ -2,12 +2,71 @@
 import type { Request, Response } from "express";
 import Business from "../models/Business.js";
 
+const STATE_NAME_TO_ABBREVIATION: Record<string, string> = {
+    "alabama": "AL",
+    "alaska": "AK",
+    "arizona": "AZ",
+    "arkansas": "AR",
+    "california": "CA",
+    "colorado": "CO",
+    "connecticut": "CT",
+    "delaware": "DE",
+    "florida": "FL",
+    "georgia": "GA",
+    "hawaii": "HI",
+    "idaho": "ID",
+    "illinois": "IL",
+    "indiana": "IN",
+    "iowa": "IA",
+    "kansas": "KS",
+    "kentucky": "KY",
+    "louisiana": "LA",
+    "maine": "ME",
+    "maryland": "MD",
+    "massachusetts": "MA",
+    "michigan": "MI",
+    "minnesota": "MN",
+    "mississippi": "MS",
+    "missouri": "MO",
+    "montana": "MT",
+    "nebraska": "NE",
+    "nevada": "NV",
+    "new hampshire": "NH",
+    "new jersey": "NJ",
+    "new mexico": "NM",
+    "new york": "NY",
+    "north carolina": "NC",
+    "north dakota": "ND",
+    "ohio": "OH",
+    "oklahoma": "OK",
+    "oregon": "OR",
+    "pennsylvania": "PA",
+    "rhode island": "RI",
+    "south carolina": "SC",
+    "south dakota": "SD",
+    "tennessee": "TN",
+    "texas": "TX",
+    "utah": "UT",
+    "vermont": "VT",
+    "virginia": "VA",
+    "washington": "WA",
+    "west virginia": "WV",
+    "wisconsin": "WI",
+    "wyoming": "WY",
+    "district of columbia": "DC",
+    "washington dc": "DC",
+    "washington d c": "DC",
+    "dc": "DC"
+};
+
 export const searchBusiness = async(req: Request, res: Response) => {
     try {
 
         // POST request, handles empty string
         const search = ((req.body.search as string) || "").trim();
         const location = ((req.body.location as string) || "").trim();
+        const normalizedLocation = location.toLowerCase().replace(/\./g, "");
+        const stateAbbreviation = STATE_NAME_TO_ABBREVIATION[normalizedLocation];
 
         // If search is empty, returns all types of businesses
         const results = search 
@@ -28,6 +87,7 @@ export const searchBusiness = async(req: Request, res: Response) => {
             $or : [
                 { city : { $regex: location, $options: "i" } },
                 { state : { $regex: location, $options: "i" }},
+                ...(stateAbbreviation ? [{ state: { $regex: `^${stateAbbreviation}$`, $options: "i" } }] : []),
                 ...(isZip ? [{ zipCode: zip }] : [])
             ] 
         } 

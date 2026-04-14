@@ -4,19 +4,28 @@ import Navbar from "../components/Navbar";
 import BusinessCard from "../components/BusinessCard";
 import BusinessCardModal from "../components/BusinessCardModal";
 import api from "../lib/axios";
+import { useSearchParams } from "react-router";
 import type { Business } from "../types";
 
+interface DashboardPageProps {
+  onLoginClick?: () => void;
+}
 
-const DashboardPage = () => {
+const DashboardPage = ({ onLoginClick }: DashboardPageProps) => {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
   const [businessModalOpen, setBusinessModalOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const fetchBusinesses = async (search = "", pageNumber = 1): Promise<{ businesses: Business[]; totalPages: number }> => {
-    const res = await api.post("/search", { search, page: pageNumber });
+  const searchTerm = (searchParams.get("q") || searchParams.get("category") || "").trim();
+  const locationTerm = (searchParams.get("location") || "").trim();
+  const hasActiveSearch = Boolean(searchTerm || locationTerm);
+  const page = Math.max(1, Number(searchParams.get("page") ?? "1") || 1);
+
+  const fetchBusinesses = async (search = "", location = "", pageNumber = 1): Promise<{ businesses: Business[]; totalPages: number }> => {
+    const res = await api.post("/search", { search, location, page: pageNumber });
     return {
       businesses: res.data?.data ?? [],
       totalPages: res.data?.totalPages ?? 1,
@@ -27,7 +36,7 @@ const DashboardPage = () => {
     const loadBusinesses = async () => {
       setLoading(true);
       try {
-        const results = await fetchBusinesses("", page);
+        const results = await fetchBusinesses(searchTerm, locationTerm, page);
         setBusinesses(results.businesses);
         setTotalPages(results.totalPages);
         setSelectedBusiness(null);
@@ -42,12 +51,27 @@ const DashboardPage = () => {
     };
 
     loadBusinesses();
-  }, [page]);
+  }, [page, searchTerm, locationTerm]);
+
+  const updatePage = (nextPage: number) => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set("page", String(nextPage));
+    setSearchParams(nextParams);
+  };
+
+  const clearSearch = () => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete("q");
+    nextParams.delete("category");
+    nextParams.delete("location");
+    nextParams.delete("page");
+    setSearchParams(nextParams);
+  };
 
   return (
     <div className="min-h-screen bg-[#f7f7f7]">
       {/* Dashboard Page Wrapper */}
-      <Navbar />
+      <Navbar onLoginClick={onLoginClick} />
 
       <main className="mx-auto max-w-8xl px-6 py-8">
         <section className="overflow-hidden rounded-2xl bg-white shadow">
@@ -87,9 +111,18 @@ const DashboardPage = () => {
               </p>
               <div className="flex items-center gap-3">
                 {/* Pagination Buttons Container */}
+                {hasActiveSearch && (
+                  <button
+                    type="button"
+                    onClick={clearSearch}
+                    className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-bm-coral hover:text-bm-coral"
+                  >
+                    View All Businesses
+                  </button>
+                )}
                 <button
                   type="button"
-                  onClick={() => setPage((currentPage) => Math.max(currentPage - 1, 1))}
+                  onClick={() => updatePage(Math.max(page - 1, 1))}
                   disabled={page <= 1}
                   className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-bm-coral hover:text-bm-coral disabled:cursor-not-allowed disabled:opacity-50"
                 >
@@ -97,7 +130,7 @@ const DashboardPage = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setPage((currentPage) => Math.min(currentPage + 1, totalPages))}
+                  onClick={() => updatePage(Math.min(page + 1, totalPages))}
                   disabled={page >= totalPages}
                   className="rounded-lg bg-bm-coral px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-bm-coral-dark disabled:cursor-not-allowed disabled:opacity-50"
                 >

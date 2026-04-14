@@ -21,6 +21,18 @@ const BusinessCardModal = ({
   if (!isOpen || !business) return null;
 
   const primaryImage = business.image?.[0];
+  const isLoggedIn = Boolean(localStorage.getItem("token"));
+  let parsedUser: { isBusinessOwner?: boolean } | null = null;
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    try {
+      parsedUser = JSON.parse(storedUser);
+    } catch {
+      parsedUser = null;
+    }
+  }
+  const isBusinessOwner = Boolean(parsedUser?.isBusinessOwner);
+  const canWriteReview = isLoggedIn && !isBusinessOwner;
   const categoryText = Array.isArray(business.category)
     ? business.category.length
       ? business.category.join(", ")
@@ -213,16 +225,18 @@ const BusinessCardModal = ({
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  navigate(`/review/${business._id}`);
-                }}
-                className="mt-2 w-full rounded-lg bg-bm-coral px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-bm-coral-dark"
-              >
-                Write a Review
-              </button>
+              {canWriteReview && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    navigate(`/review/${business._id}`);
+                  }}
+                  className="mt-2 w-full rounded-lg bg-bm-coral px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-bm-coral-dark"
+                >
+                  Write a Review
+                </button>
+              )}
 
               <HashLink to={`/business/${business._id}/#reviews`}>
                 <button

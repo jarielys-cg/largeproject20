@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Navigate, Routes, Route } from 'react-router'
+import { Navigate, Routes, Route, useLocation } from 'react-router'
 import { Toaster } from 'react-hot-toast'
 import Landing from './pages/landing'
 import UserSignUp from './pages/userSignUp'
@@ -13,11 +13,29 @@ import BusinessReviews from "./pages/BusinessReviews"
 import BusinessPage from "./pages/BusinessPage"
 import UserDashboard from "./pages/userDashboard"
 
+function SearchRedirect() {
+  const location = useLocation()
+
+  return <Navigate to={`/dashboard${location.search}`} replace />
+}
+
 function App() {
   const [loginModalOpen, setLoginModalOpen] = useState(false)
   const [choiceModalOpen, setChoiceModalOpen] = useState(false)
   const [bizSignUpOpen, setBizSignUpOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(Boolean(localStorage.getItem('token')))
+
+  const getHomeRedirectPath = () => {
+    const storedUser = localStorage.getItem('user')
+    if (!storedUser) return '/dashboard'
+
+    try {
+      const parsedUser = JSON.parse(storedUser)
+      return parsedUser?.isBusinessOwner ? '/business/dashboard' : '/dashboard'
+    } catch {
+      return '/dashboard'
+    }
+  }
 
   useEffect(() => {
     const syncAuthFromStorage = () => {
@@ -40,7 +58,7 @@ function App() {
           path="/"
           element={
             isLoggedIn
-              ? <Navigate to="/dashboard" replace />
+              ? <Navigate to={getHomeRedirectPath()} replace />
               : <Landing onLoginClick={() => setLoginModalOpen(true)} />
           }
         />
@@ -50,7 +68,8 @@ function App() {
         <Route path="/business/dashboard" element={<BusinessDashboard />} />
         <Route path="/business/reviews/:businessId" element={<BusinessReviews />} />
         <Route path="/business/:businessId" element={<BusinessPage onLoginClick={() => setLoginModalOpen(true)} />} />
-        <Route path="/dashboard" element={<UserDashboard />} />
+        <Route path="/search" element={<SearchRedirect />} />
+        <Route path="/dashboard" element={<UserDashboard onLoginClick={() => setLoginModalOpen(true)} />} />
       </Routes>
 
      

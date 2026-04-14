@@ -8,7 +8,7 @@ import {
   UserCircle2,
 } from "lucide-react";
 import logo from "../assets/logo.png";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import BusinessSignUpModal from "./forms/BusinessSignUpModal";
 import LoginModal from "./forms/loginModal";
@@ -18,9 +18,21 @@ interface NavbarProps {
 }
 
 const Navbar = ({ onLoginClick }: NavbarProps) => {
-  const username = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user") as string).username
-    : null;
+  const routeLocation = useLocation();
+  const getStoredUser = () => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return null;
+
+    try {
+      return JSON.parse(storedUser);
+    } catch {
+      return null;
+    }
+  };
+
+  const parsedUser = getStoredUser();
+  const username = parsedUser?.username ?? null;
+  const isBusinessOwner = Boolean(parsedUser?.isBusinessOwner);
 
   const navigate = useNavigate();
   const [bizDropdownOpen, setBizDropdownOpen] = useState(false);
@@ -29,8 +41,10 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [locationQuery, setLocationQuery] = useState("");
   const businessDropdownRef = useRef<HTMLDivElement>(null);
   const userDropdownRef = useRef<HTMLDivElement>(null);
+  const hideSearchBar = routeLocation.pathname === "/";
 
   const syncAuthFromStorage = () => {
     setIsLoggedIn(Boolean(localStorage.getItem("token")));
@@ -47,12 +61,28 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedQuery = searchQuery.trim();
-    if (!trimmedQuery) return;
-    navigate(`/search?q=${encodeURIComponent(trimmedQuery)}`);
+    const trimmedLocation = locationQuery.trim();
+    if (!trimmedQuery && !trimmedLocation) return;
+
+    const params = new URLSearchParams();
+    if (trimmedQuery) {
+      params.set("q", trimmedQuery);
+    }
+    if (trimmedLocation) {
+      params.set("location", trimmedLocation);
+    }
+    navigate(`/search?${params.toString()}`);
   };
 
   const handleLogoClick = () => {
-    navigate(isLoggedIn ? "/dashboard" : "/");
+    const hasToken = Boolean(localStorage.getItem("token"));
+    if (!hasToken) {
+      navigate("/");
+      return;
+    }
+
+    const latestUser = getStoredUser();
+    navigate(latestUser?.isBusinessOwner ? "/business/dashboard" : "/dashboard");
   };
 
   useEffect(() => {
@@ -87,9 +117,17 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
     };
   }, []);
 
+  useEffect(() => {
+    const params = new URLSearchParams(routeLocation.search);
+    const urlSearch = (params.get("q") || params.get("category") || "").trim();
+    const urlLocation = (params.get("location") || "").trim();
+    setSearchQuery(urlSearch);
+    setLocationQuery(urlLocation);
+  }, [routeLocation.search]);
+
   return (
     <>
-      <nav className="w-full bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-4 relative z-10">
+      <nav className="w-full bg-white border-b border-gray-200 px-6 py-3 flex flex-wrap items-center gap-4 relative z-10">
         {/* Logo */}
         <div
           className="flex items-center gap-2 cursor-pointer shrink-0"
@@ -101,10 +139,10 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
           </span>
         </div>
 
-        {isLoggedIn && (
+        {!hideSearchBar && (
           <form
             onSubmit={handleSearchSubmit}
-            className="hidden md:flex flex-1 max-w-2xl mx-4"
+            className="order-3 basis-full md:order-none md:flex md:flex-1 md:max-w-2xl md:mx-4"
           >
             <div className="w-full flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden focus-within:border-bm-coral transition-colors">
               <input
@@ -113,6 +151,14 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search businesses, categories, or services"
                 className="w-full px-4 py-2 text-sm text-gray-700 focus:outline-none"
+              />
+              <div className="h-6 w-px bg-gray-200" />
+              <input
+                type="text"
+                value={locationQuery}
+                onChange={(e) => setLocationQuery(e.target.value)}
+                placeholder="Location"
+                className="w-32 px-4 py-2 text-sm text-gray-700 focus:outline-none md:w-40"
               />
               <button
                 type="submit"
@@ -170,7 +216,7 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
             </div>
           )}
 
-          {isLoggedIn && (
+          {isLoggedIn && !isBusinessOwner && (
             <button
               onClick={() => navigate("/write-review")}
               className="text-sm font-medium text-gray-700 hover:text-bm-coral whitespace-nowrap"
@@ -212,6 +258,21 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
 
               {userDropdownOpen && (
                 <div className="absolute top-full right-0 mt-2 w-44 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                  {isBusinessOwner && (
+                    <>
+                      <button
+                        onClick={() => {
+                          navigate("/business/dashboard");
+                          setUserDropdownOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-bm-gray hover:text-bm-coral transition-colors text-left"
+                      >
+                        <BriefcaseBusinessIcon size={16} color="currentColor" />
+                        Business Dashboard
+                      </button>
+                      <div className="h-px bg-gray-100"></div>
+                    </>
+                  )}
                   <button
                     onClick={() => {
                       navigate("/dashboard");
@@ -220,7 +281,7 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
                     className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-bm-gray hover:text-bm-coral transition-colors text-left"
                   >
                     <LayoutDashboard size={16} color="currentColor" />
-                    Dashboard
+                    User Dashboard
                   </button>
                   <div className="h-px bg-gray-100"></div>
                   <button

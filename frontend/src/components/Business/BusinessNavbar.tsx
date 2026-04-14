@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import logo from '../../assets/logo.png'
-import { Settings, LogOut, ChevronDown } from 'lucide-react'
+import { Settings, LogOut, ChevronDown, LayoutDashboard, BriefcaseBusinessIcon } from 'lucide-react'
 
 interface Props {
   owner: { firstName: string; lastName: string; username: string } | null
@@ -31,7 +31,7 @@ const BusinessNavbar = ({ owner, onLogout }: Props) => {
 
   return (
     <nav className="w-full bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between relative z-10">
-      <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
+      <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/business/dashboard')}>
         <img src={logo} alt="BizMart logo" className="w-9 h-9" />
         <div>
           <span className="text-lg font-bold text-bm-dark">Biz<span className="text-bm-coral">Mart</span></span>
@@ -66,6 +66,28 @@ const BusinessNavbar = ({ owner, onLogout }: Props) => {
               <p className="text-sm font-medium text-gray-900">{owner?.firstName} {owner?.lastName}</p>
               <p className="text-xs text-gray-400">Business Owner</p>
             </div>
+            <button
+              onClick={() => {
+                navigate('/business/dashboard')
+                setProfileDropdown(false)
+              }}
+              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              <BriefcaseBusinessIcon size={16} className="text-gray-500" />
+              Business Dashboard
+            </button>
+            <div className="h-px bg-gray-100" />
+            <button
+              onClick={() => {
+                navigate('/dashboard')
+                setProfileDropdown(false)
+              }}
+              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              <LayoutDashboard size={16} className="text-gray-500" />
+              User Dashboard
+            </button>
+            <div className="h-px bg-gray-100" />
             <button className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
               <Settings size={16} className="text-gray-500" />
               Account Settings
