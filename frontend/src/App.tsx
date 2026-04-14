@@ -50,7 +50,7 @@ function App() {
         <Route path="/business/dashboard" element={<BusinessDashboard />} />
         <Route path="/business/reviews/:businessId" element={<BusinessReviews />} />
         <Route path="/business/:businessId" element={<BusinessPage onLoginClick={() => setLoginModalOpen(true)} />} />
-        <Route path="/dashboard" element={<UserDashboard user={null} />} />
+        <Route path="/dashboard" element={<UserDashboard />} />
       </Routes>
 
      

@@ -6,16 +6,8 @@ import BusinessCardModal from "../components/BusinessCardModal";
 import api from "../lib/axios";
 import type { Business } from "../types";
 
-type User = {
-  username: string;
-  email: string;
-};
 
-type DashboardProps = {
-  user: User | null;
-};
-
-const DashboardPage = ({ user: _user }: DashboardProps) => {
+const DashboardPage = () => {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
