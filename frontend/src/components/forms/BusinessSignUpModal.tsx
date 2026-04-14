@@ -140,7 +140,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             <button onClick={onClose} className="text-white/70 hover:text-white text-xl">✕</button>
           </div>
 
-          //Step indicators 
+          {/*Step indicators*/}
           <div className="flex items-center gap-2">
             {stepTitles.map((title, i) => (
               <div key={i} className="flex items-center gap-2 flex-1">
@@ -166,7 +166,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         {/* Form body */}
         <div className="px-8 py-6">
 
-          //Step 1 - Business Info
+          {/*Step 1 - Business Info*/}
           {step === 1 && (
             <form onSubmit={handleNext} className="space-y-4">
               <div>
@@ -206,7 +206,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             </form>
           )}
 
-          //Step 2 - Location
+          {/*Step 2 - Location*/}
           {step === 2 && (
             <form onSubmit={handleNext} className="space-y-4">
               <div>
@@ -251,7 +251,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             </form>
           )}
 
-          //Step 3 - Account
+          {/*Step 3 - Account*/}
           {step === 3 && (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
