@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -44,6 +45,27 @@ class AuthService {
       return {'success': true, 'user': User.fromJson(data['user'])};
     }
     return {'success': false, 'error': data['error'] ?? 'Login failed'};
+  }
+
+  static Future<Map<String, dynamic>> forgotPassword(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/forgotPassword'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      ).timeout(const Duration(seconds: 15));
+      if (response.statusCode == 200) {
+        return {'success': true};
+      }
+      try {
+        final data = jsonDecode(response.body);
+        return {'success': false, 'error': data['error'] ?? 'Failed to send reset email'};
+      } catch (_) {
+        return {'success': false, 'error': 'Failed to send reset email'};
+      }
+    } catch (_) {
+      return {'success': false, 'error': 'Could not connect to server'};
+    }
   }
 
   static Future<Map<String, dynamic>> signUp({

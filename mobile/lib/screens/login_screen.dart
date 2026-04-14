@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import 'forgot_password_screen.dart';
 import 'home_screen.dart';
 import 'signup_screen.dart';
 
@@ -92,7 +93,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     validator: (v) => v == null || v.isEmpty ? 'Enter your password' : null,
                   ),
-                  const SizedBox(height: 24),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ForgotPasswordScreen())),
+                      child: const Text('Forgot Password?', style: TextStyle(color: Color(0xFFF26B5B))),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   SizedBox(
                     width: double.infinity,
                     height: 48,

@@ -1,0 +1,182 @@
+classDiagram
+
+    class BizMartApp {
+        +build(context) Widget
+    }
+
+    class SplashScreen {
+        -_checkAuth()
+    }
+
+    class LoginScreen {
+        -String _email
+        -String _password
+        -bool _loading
+        -bool _obscure
+        -String _error
+        -_login()
+    }
+
+    class SignupScreen {
+        -String _firstName
+        -String _lastName
+        -String _username
+        -String _email
+        -String _password
+        -String _zip
+        -bool _isBusinessOwner
+        -_signUp()
+    }
+
+    class HomeScreen {
+        -List~Business~ _businesses
+        -bool _loading
+        -int _page
+        -int _totalPages
+        -User _user
+        -_loadUser()
+        -_search(query, page)
+        -_logout()
+    }
+
+    class BusinessDetailScreen {
+        -Business business
+        -List~Review~ _reviews
+        -bool _loadingReviews
+        -int _reviewPage
+        -int _totalReviewPages
+        -User _user
+        -_loadReviews(page)
+        -_deleteReview(reviewId)
+    }
+
+    class MyBusinessesScreen {
+        -List~Business~ _businesses
+        -bool _loading
+        -_load()
+        -_delete(business)
+    }
+
+    class AddEditBusinessScreen {
+        -Business business
+        -List~String~ _categories
+        -bool _loading
+        -bool _isEditing
+        -_addCategory()
+        -_submit()
+    }
+
+    class WriteReviewScreen {
+        -Business business
+        -String _review
+        -int _rating
+        -bool _loading
+        -_submit()
+    }
+
+    class BusinessCard {
+        -Business business
+        -VoidCallback onTap
+        +build(context) Widget
+    }
+
+    class ReviewCard {
+        -Review review
+        -String currentUserId
+        -VoidCallback onDelete
+        +build(context) Widget
+    }
+
+    class StarRating {
+        -double rating
+        -double size
+        +build(context) Widget
+    }
+
+    class User {
+        +String id
+        +String firstName
+        +String lastName
+        +String username
+        +String email
+        +bool isBusinessOwner
+        +int zipCode
+        +fromJson(json) User
+    }
+
+    class Business {
+        +String id
+        +String name
+        +String ownerId
+        +List~String~ category
+        +String description
+        +List~String~ image
+        +String address
+        +String city
+        +String state
+        +String zipCode
+        +String phone
+        +String websiteLink
+        +int reviewCount
+        +double averageReviewScore
+        +fromJson(json) Business
+        +toJson() Map
+    }
+
+    class Review {
+        +String id
+        +String businessId
+        +String userId
+        +int rating
+        +String review
+        +DateTime createdAt
+        +fromJson(json) Review
+    }
+
+    class AuthService {
+        +getToken() String
+        +getCachedUser() User
+        +login(email, password) Map
+        +signUp(firstName, lastName, username, email, password, isBusinessOwner, zipCode) Map
+        +logout()
+    }
+
+    class ApiService {
+        +searchBusinesses(query, page) Map
+        +getBusinessById(id) Business
+        +getMyBusinesses() List~Business~
+        +addBusiness(body) Map
+        +editBusiness(id, body) Map
+        +removeBusiness(id) Map
+        +getReviews(businessId, page) Map
+        +addReview(businessId, rating, review) Map
+        +deleteReview(reviewId) Map
+    }
+
+    BizMartApp --> SplashScreen
+    SplashScreen --> LoginScreen
+    SplashScreen --> HomeScreen
+    LoginScreen --> HomeScreen
+    LoginScreen --> SignupScreen
+    SignupScreen --> HomeScreen
+    HomeScreen --> BusinessDetailScreen
+    HomeScreen --> MyBusinessesScreen
+    HomeScreen --> AuthService
+    HomeScreen --> ApiService
+    HomeScreen --> BusinessCard
+    BusinessDetailScreen --> WriteReviewScreen
+    BusinessDetailScreen --> ApiService
+    BusinessDetailScreen --> ReviewCard
+    BusinessDetailScreen --> StarRating
+    MyBusinessesScreen --> AddEditBusinessScreen
+    MyBusinessesScreen --> ApiService
+    MyBusinessesScreen --> BusinessCard
+    WriteReviewScreen --> ApiService
+    AddEditBusinessScreen --> ApiService
+    BusinessCard --> Business
+    BusinessCard --> StarRating
+    ReviewCard --> Review
+    ReviewCard --> StarRating
+    AuthService --> User
+    ApiService --> Business
+    ApiService --> Review

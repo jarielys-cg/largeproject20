@@ -2,6 +2,14 @@ import 'package:flutter/material.dart';
 import '../models/business.dart';
 import '../services/api_service.dart';
 
+const List<String> kCategories = [
+  'Restaurants',
+  'Shopping',
+  'Automotive',
+  'Home Services',
+  'Beauty & Spas',
+];
+
 class AddEditBusinessScreen extends StatefulWidget {
   final Business? business;
 
@@ -21,8 +29,7 @@ class _AddEditBusinessScreenState extends State<AddEditBusinessScreen> {
   late final TextEditingController _zipCtrl;
   late final TextEditingController _phoneCtrl;
   late final TextEditingController _websiteCtrl;
-  late final TextEditingController _categoryCtrl;
-  List<String> _categories = [];
+  List<String> _selectedCategories = [];
   bool _loading = false;
   String? _error;
 
@@ -40,8 +47,7 @@ class _AddEditBusinessScreenState extends State<AddEditBusinessScreen> {
     _zipCtrl = TextEditingController(text: b?.zipCode?.toString() ?? '');
     _phoneCtrl = TextEditingController(text: b?.phone ?? '');
     _websiteCtrl = TextEditingController(text: b?.websiteLink ?? '');
-    _categoryCtrl = TextEditingController();
-    _categories = List.from(b?.category ?? []);
+    _selectedCategories = List.from(b?.category ?? []);
   }
 
   @override
@@ -54,31 +60,20 @@ class _AddEditBusinessScreenState extends State<AddEditBusinessScreen> {
     _zipCtrl.dispose();
     _phoneCtrl.dispose();
     _websiteCtrl.dispose();
-    _categoryCtrl.dispose();
     super.dispose();
-  }
-
-  void _addCategory() {
-    final cat = _categoryCtrl.text.trim();
-    if (cat.isNotEmpty && !_categories.contains(cat)) {
-      setState(() {
-        _categories.add(cat);
-        _categoryCtrl.clear();
-      });
-    }
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_categories.isEmpty) {
-      setState(() => _error = 'Add at least one category');
+    if (_selectedCategories.isEmpty) {
+      setState(() => _error = 'Select at least one category');
       return;
     }
     setState(() { _loading = true; _error = null; });
 
     final body = {
       'name': _nameCtrl.text.trim(),
-      'category': _categories,
+      'category': _selectedCategories,
       'description': _descCtrl.text.trim(),
       'address': _addressCtrl.text.trim(),
       'city': _cityCtrl.text.trim(),
@@ -133,32 +128,31 @@ class _AddEditBusinessScreenState extends State<AddEditBusinessScreen> {
               const SizedBox(height: 14),
               const Text('Categories', style: TextStyle(fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _categoryCtrl,
-                      decoration: const InputDecoration(hintText: 'e.g. Restaurant', border: OutlineInputBorder()),
-                      onSubmitted: (_) => _addCategory(),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: kCategories.map((cat) {
+                  final selected = _selectedCategories.contains(cat);
+                  return FilterChip(
+                    label: Text(cat),
+                    selected: selected,
+                    onSelected: (val) => setState(() {
+                      if (val) {
+                        _selectedCategories.add(cat);
+                      } else {
+                        _selectedCategories.remove(cat);
+                      }
+                    }),
+                    selectedColor: const Color(0xFFF26B5B).withOpacity(0.2),
+                    checkmarkColor: const Color(0xFFF26B5B),
+                    labelStyle: TextStyle(
+                      color: selected ? const Color(0xFFF26B5B) : Colors.black87,
+                      fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(onPressed: _addCategory, child: const Text('Add')),
-                ],
+                    side: BorderSide(color: selected ? const Color(0xFFF26B5B) : Colors.grey[300]!),
+                  );
+                }).toList(),
               ),
-              if (_categories.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Wrap(
-                    spacing: 6,
-                    children: _categories
-                        .map((c) => Chip(
-                              label: Text(c),
-                              onDeleted: () => setState(() => _categories.remove(c)),
-                            ))
-                        .toList(),
-                  ),
-                ),
               const SizedBox(height: 14),
               _field(_addressCtrl, 'Address'),
               const SizedBox(height: 14),
