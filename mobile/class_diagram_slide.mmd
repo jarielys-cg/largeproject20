@@ -1,0 +1,48 @@
+classDiagram
+    direction LR
+
+    class BizMartApp
+    class SplashScreen
+    class LoginScreen
+    class SignupScreen
+    class HomeScreen
+    class BusinessDetailScreen
+    class MyBusinessesScreen
+    class AddEditBusinessScreen
+    class WriteReviewScreen
+    class BusinessCard
+    class ReviewCard
+    class StarRating
+    class User
+    class Business
+    class Review
+    class AuthService
+    class ApiService
+
+    BizMartApp --> SplashScreen
+    SplashScreen --> LoginScreen
+    SplashScreen --> HomeScreen
+    LoginScreen --> SignupScreen
+    LoginScreen --> HomeScreen
+    SignupScreen --> HomeScreen
+    HomeScreen --> BusinessDetailScreen
+    HomeScreen --> MyBusinessesScreen
+    HomeScreen --> BusinessCard
+    HomeScreen --> AuthService
+    HomeScreen --> ApiService
+    BusinessDetailScreen --> WriteReviewScreen
+    BusinessDetailScreen --> ReviewCard
+    BusinessDetailScreen --> StarRating
+    BusinessDetailScreen --> ApiService
+    MyBusinessesScreen --> AddEditBusinessScreen
+    MyBusinessesScreen --> BusinessCard
+    MyBusinessesScreen --> ApiService
+    WriteReviewScreen --> ApiService
+    AddEditBusinessScreen --> ApiService
+    BusinessCard --> Business
+    BusinessCard --> StarRating
+    ReviewCard --> Review
+    ReviewCard --> StarRating
+    AuthService --> User
+    ApiService --> Business
+    ApiService --> Review

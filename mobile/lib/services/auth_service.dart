@@ -46,6 +46,19 @@ class AuthService {
     return {'success': false, 'error': data['error'] ?? 'Login failed'};
   }
 
+  static Future<Map<String, dynamic>> forgotPassword(String email) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/forgotPassword'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email}),
+    );
+    final data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return {'success': true};
+    }
+    return {'success': false, 'error': data['error'] ?? 'Failed to send reset email'};
+  }
+
   static Future<Map<String, dynamic>> signUp({
     required String firstName,
     required String lastName,
