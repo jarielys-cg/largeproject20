@@ -17,11 +17,12 @@ const DashboardPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const searchTerm = (searchParams.get("q") || searchParams.get("category") || "").trim();
-  const hasActiveSearch = Boolean(searchTerm);
+  const locationTerm = (searchParams.get("location") || "").trim();
+  const hasActiveSearch = Boolean(searchTerm || locationTerm);
   const page = Math.max(1, Number(searchParams.get("page") ?? "1") || 1);
 
-  const fetchBusinesses = async (search = "", pageNumber = 1): Promise<{ businesses: Business[]; totalPages: number }> => {
-    const res = await api.post("/search", { search, page: pageNumber });
+  const fetchBusinesses = async (search = "", location = "", pageNumber = 1): Promise<{ businesses: Business[]; totalPages: number }> => {
+    const res = await api.post("/search", { search, location, page: pageNumber });
     return {
       businesses: res.data?.data ?? [],
       totalPages: res.data?.totalPages ?? 1,
@@ -32,7 +33,7 @@ const DashboardPage = () => {
     const loadBusinesses = async () => {
       setLoading(true);
       try {
-        const results = await fetchBusinesses(searchTerm, page);
+        const results = await fetchBusinesses(searchTerm, locationTerm, page);
         setBusinesses(results.businesses);
         setTotalPages(results.totalPages);
         setSelectedBusiness(null);
@@ -47,7 +48,7 @@ const DashboardPage = () => {
     };
 
     loadBusinesses();
-  }, [page, searchTerm]);
+  }, [page, searchTerm, locationTerm]);
 
   const updatePage = (nextPage: number) => {
     const nextParams = new URLSearchParams(searchParams);
@@ -59,6 +60,7 @@ const DashboardPage = () => {
     const nextParams = new URLSearchParams(searchParams);
     nextParams.delete("q");
     nextParams.delete("category");
+    nextParams.delete("location");
     nextParams.delete("page");
     setSearchParams(nextParams);
   };

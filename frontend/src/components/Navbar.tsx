@@ -8,7 +8,7 @@ import {
   UserCircle2,
 } from "lucide-react";
 import logo from "../assets/logo.png";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import BusinessSignUpModal from "./forms/BusinessSignUpModal";
 import LoginModal from "./forms/loginModal";
@@ -18,6 +18,7 @@ interface NavbarProps {
 }
 
 const Navbar = ({ onLoginClick }: NavbarProps) => {
+  const routeLocation = useLocation();
   const username = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user") as string).username
     : null;
@@ -29,8 +30,10 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [locationQuery, setLocationQuery] = useState("");
   const businessDropdownRef = useRef<HTMLDivElement>(null);
   const userDropdownRef = useRef<HTMLDivElement>(null);
+  const hideSearchBar = routeLocation.pathname === "/";
 
   const syncAuthFromStorage = () => {
     setIsLoggedIn(Boolean(localStorage.getItem("token")));
@@ -47,8 +50,17 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedQuery = searchQuery.trim();
-    if (!trimmedQuery) return;
-    navigate(`/search?q=${encodeURIComponent(trimmedQuery)}`);
+    const trimmedLocation = locationQuery.trim();
+    if (!trimmedQuery && !trimmedLocation) return;
+
+    const params = new URLSearchParams();
+    if (trimmedQuery) {
+      params.set("q", trimmedQuery);
+    }
+    if (trimmedLocation) {
+      params.set("location", trimmedLocation);
+    }
+    navigate(`/search?${params.toString()}`);
   };
 
   const handleLogoClick = () => {
@@ -87,6 +99,14 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
     };
   }, []);
 
+  useEffect(() => {
+    const params = new URLSearchParams(routeLocation.search);
+    const urlSearch = (params.get("q") || params.get("category") || "").trim();
+    const urlLocation = (params.get("location") || "").trim();
+    setSearchQuery(urlSearch);
+    setLocationQuery(urlLocation);
+  }, [routeLocation.search]);
+
   return (
     <>
       <nav className="w-full bg-white border-b border-gray-200 px-6 py-3 flex flex-wrap items-center gap-4 relative z-10">
@@ -101,27 +121,37 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
           </span>
         </div>
 
-        <form
-          onSubmit={handleSearchSubmit}
-          className="order-3 basis-full md:order-none md:flex md:flex-1 md:max-w-2xl md:mx-4"
-        >
-          <div className="w-full flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden focus-within:border-bm-coral transition-colors">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search businesses, categories, or services"
-              className="w-full px-4 py-2 text-sm text-gray-700 focus:outline-none"
-            />
-            <button
-              type="submit"
-              className="px-3 py-2 text-gray-500 hover:text-bm-coral transition-colors"
-              aria-label="Search"
-            >
-              <Search size={18} />
-            </button>
-          </div>
-        </form>
+        {!hideSearchBar && (
+          <form
+            onSubmit={handleSearchSubmit}
+            className="order-3 basis-full md:order-none md:flex md:flex-1 md:max-w-2xl md:mx-4"
+          >
+            <div className="w-full flex items-center bg-white border border-gray-300 rounded-lg overflow-hidden focus-within:border-bm-coral transition-colors">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search businesses, categories, or services"
+                className="w-full px-4 py-2 text-sm text-gray-700 focus:outline-none"
+              />
+              <div className="h-6 w-px bg-gray-200" />
+              <input
+                type="text"
+                value={locationQuery}
+                onChange={(e) => setLocationQuery(e.target.value)}
+                placeholder="Location"
+                className="w-32 px-4 py-2 text-sm text-gray-700 focus:outline-none md:w-40"
+              />
+              <button
+                type="submit"
+                className="px-3 py-2 text-gray-500 hover:text-bm-coral transition-colors"
+                aria-label="Search"
+              >
+                <Search size={18} />
+              </button>
+            </div>
+          </form>
+        )}
 
         {/* Right side */}
         <div className="flex items-center gap-4 shrink-0 ml-auto">
