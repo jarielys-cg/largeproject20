@@ -9,8 +9,7 @@ const CATEGORIES = [
   'Shopping',
   'Automotive',
   'Home Services',
-  'Beauty & Spas',
-  'Other'
+  'Beauty & Spas'
 ]
 
 const BusinessSignUpModal = ({ isOpen, onClose, skipAccountStep = false, onSuccess }: BusinessSignUpModalProps) => {
