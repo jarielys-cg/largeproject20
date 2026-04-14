@@ -125,48 +125,42 @@ const BusinessDashboard = () => {
       setSavingName(false)
     }
   }
-  
-  const handleAddCategory = async (cat: string) => {
-  if (!activeBusiness) return
-  try {
-    const token = localStorage.getItem('token')
-    const payload = JSON.parse(atob(token!.split('.')[1]))
-      const existingCategories = Array.isArray(activeBusiness.category)
-        ? activeBusiness.category
-        : (activeBusiness.category ? [activeBusiness.category] : [])
-      const updatedCategories = [...existingCategories, cat]
-    const res = await api.patch('/editB', {
-      ownerId: payload.userId,
-      name: activeBusiness.name,
-      category: updatedCategories
-    })
-    setActiveBusiness(res.data)
-    setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
-  } catch (err: any) {
-    toast.error(err.response?.data?.error || 'Failed to add category')
-  }
-}
 
-const handleRemoveCategory = async (cat: string) => {
-  if (!activeBusiness) return
-  try {
-    const token = localStorage.getItem('token')
-    const payload = JSON.parse(atob(token!.split('.')[1]))
-    const existingCategories = Array.isArray(activeBusiness.category)
-      ? activeBusiness.category
-      : (activeBusiness.category ? [activeBusiness.category] : [])
-    const updatedCategories = existingCategories.filter(c => c !== cat)
-    const res = await api.patch('/editB', {
-      ownerId: payload.userId,
-      name: activeBusiness.name,
-      category: updatedCategories
-    })
-    setActiveBusiness(res.data)
-    setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
-  } catch (err: any) {
-    toast.error(err.response?.data?.error || 'Failed to remove category')
+  const handleAddCategory = async (cat: string) => {
+    if (!activeBusiness) return
+    try {
+      const token = localStorage.getItem('token')
+      const payload = JSON.parse(atob(token!.split('.')[1]))
+      const updatedCategories = [...activeBusiness.category, cat]
+      const res = await api.patch('/editB', {
+        ownerId: payload.userId,
+        name: activeBusiness.name,
+        category: updatedCategories
+      })
+      setActiveBusiness(res.data)
+      setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || 'Failed to add category')
+    }
   }
-}
+
+  const handleRemoveCategory = async (cat: string) => {
+    if (!activeBusiness) return
+    try {
+      const token = localStorage.getItem('token')
+      const payload = JSON.parse(atob(token!.split('.')[1]))
+      const updatedCategories = activeBusiness.category.filter(c => c !== cat)
+      const res = await api.patch('/editB', {
+        ownerId: payload.userId,
+        name: activeBusiness.name,
+        category: updatedCategories
+      })
+      setActiveBusiness(res.data)
+      setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || 'Failed to remove category')
+    }
+  }
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!activeBusiness || !e.target.files) return
@@ -231,7 +225,7 @@ const handleRemoveCategory = async (cat: string) => {
     } catch {
       toast.error('Failed to update website')
     }
-}
+  }
 
   const handleSavePhone = async (phone: string) => {
     if (!activeBusiness) return
@@ -303,8 +297,8 @@ const handleRemoveCategory = async (cat: string) => {
               {/* Logo upload */}
               <div className="relative group shrink-0">
                 <div className="w-24 h-24 rounded-full bg-bm-gray border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-bm-coral transition-colors group-hover:bg-red-50 overflow-hidden">
-                  {activeBusiness?.photos?.[0] ? (
-                    <img src={activeBusiness.photos[0]} alt="logo" className="w-full h-full object-cover" />
+                  {activeBusiness?.image?.[0] ? (
+                    <img src={activeBusiness.image[0]} alt="logo" className="w-full h-full object-cover" />
                   ) : (
                     <>
                       <ImagePlus size={20} className="text-gray-400 group-hover:text-bm-coral" />
@@ -415,11 +409,11 @@ const handleRemoveCategory = async (cat: string) => {
               </div>
             </div>
           </div>
-           {/* Description — between header and categories */}
-        <BusinessDescription
-          description={activeBusiness?.description}
-          onSave={handleSaveDescription}
-        />
+          {/* Description — between header and categories */}
+          <BusinessDescription
+            description={activeBusiness?.description}
+            onSave={handleSaveDescription}
+          />
 
           <BusinessCategories
             categories={activeBusiness?.category ?? []}
@@ -428,14 +422,14 @@ const handleRemoveCategory = async (cat: string) => {
           />
 
           <BusinessPhotos
-            photos={activeBusiness?.photos ?? []}
+            photos={activeBusiness?.image ?? []}
             uploading={uploadingPhoto}
             onUpload={handlePhotoUpload}
             onRemove={handleRemovePhoto}
           />
         </div>
 
-         <BusinessInfo
+        <BusinessInfo
           address={activeBusiness?.address}
           phone={activeBusiness?.phone}
           websiteLink={activeBusiness?.websiteLink}
