@@ -274,7 +274,6 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
       <LoginModal
         isOpen={bizLoginOpen}
         onClose={() => setBizLoginOpen(false)}
-        defaultBusinessOwner={true}
         onBusinessSignUp={() => {
           setBizLoginOpen(false);
           setBizModalOpen(true);

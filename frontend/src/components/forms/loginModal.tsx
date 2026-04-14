@@ -5,13 +5,12 @@ import api from '../../lib/axios'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router'
 
-const LoginModal = ({ isOpen, onClose, defaultBusinessOwner = false, onBusinessSignUp }: LoginModalProps) => {
+const LoginModal = ({ isOpen, onClose, onBusinessSignUp }: LoginModalProps) => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const [form, setForm] = useState<LoginForm>({
     email: '',
-    password: '',
-    isBusinessOwner: defaultBusinessOwner
+    password: ''
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,7 +28,7 @@ const LoginModal = ({ isOpen, onClose, defaultBusinessOwner = false, onBusinessS
     toast.success(`Hello ${res.data.user.username}!`)
     onClose()
 
-    if (form.isBusinessOwner || res.data.user.isBusinessOwner) {
+    if (res.data.user.isBusinessOwner) {
         navigate('/business/dashboard')
       }
       else {
@@ -75,30 +74,13 @@ const LoginModal = ({ isOpen, onClose, defaultBusinessOwner = false, onBusinessS
               className="border border-gray-300 rounded py-2 px-4 focus:outline-none focus:border-bm-coral" />
           </div>
 
-          {/* Business owner toggle */}
-          <div
-            className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer mb-4 transition-colors ${
-              form.isBusinessOwner ? 'border-bm-coral bg-red-50' : 'border-gray-200'
-            }`}
-            onClick={() => setForm(prev => ({ ...prev, isBusinessOwner: !prev.isBusinessOwner }))}
-          >
-            <span className="text-sm font-medium text-gray-700">Signing in as business owner</span>
-            <div className={`w-10 h-6 rounded-full transition-colors flex items-center px-1 ${
-              form.isBusinessOwner ? 'bg-bm-coral' : 'bg-gray-300'
-            }`}>
-              <div className={`w-4 h-4 bg-white rounded-full shadow transition-transform ${
-                form.isBusinessOwner ? 'translate-x-4' : 'translate-x-0'
-              }`} />
-            </div>
-          </div>
-
           <div className="text-center mb-2">
             <button type="button" className="text-sm text-bm-coral hover:underline">Forgot password?</button>
           </div>
 
           <button type="submit" disabled={loading}
             className="w-full bg-bm-coral hover:bg-bm-coral-dark text-white font-bold py-2 px-10 rounded mb-3 mt-1">
-            {loading ? 'Logging in...' : form.isBusinessOwner ? 'Login as Business Owner' : 'Login'}
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 

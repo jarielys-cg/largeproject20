@@ -47,13 +47,11 @@ export interface BusinessSignUpModalProps {
 export interface LoginForm {
   email: string
   password: string
-  isBusinessOwner: boolean
 }
 
 export interface LoginModalProps {
   isOpen: boolean
   onClose: () => void
-  defaultBusinessOwner?: boolean
   onBusinessSignUp?: () => void 
 }
 
