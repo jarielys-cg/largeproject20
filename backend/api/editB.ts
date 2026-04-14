@@ -3,7 +3,7 @@ import Business from "../models/Business.js";
 import mongoose from "mongoose";
 
 export const editB = async (req: Request, res: Response) => {
-    const { name, newName, category, description, image, address, city, state, zipCode, phone, websiteLink, } = req.body;
+    const { name, newName, category, description, address, city, state, zipCode, phone, websiteLink, } = req.body;
 
     const ownerId = (req as any).user.id;
 
@@ -17,7 +17,7 @@ export const editB = async (req: Request, res: Response) => {
         return res.status(404).json({ error: "Business not found" });
     }
 
-    const params = { newName, category: Array.isArray(category) ? category : category ? [category] : undefined, description, image, address, city, state, zipCode, phone, websiteLink }
+    const params = { newName, category: Array.isArray(category) ? category : category ? [category] : undefined, description, address, city, state, zipCode, phone, websiteLink }
 
     const updateData: Record<string, any> = {};
     Object.entries(params).forEach(([key, value]) => {

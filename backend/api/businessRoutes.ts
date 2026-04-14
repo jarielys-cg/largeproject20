@@ -7,11 +7,15 @@ import { searchBusiness } from "./search.js";
 import Business from "../models/Business.js";
 import jwt from "jsonwebtoken";
 import { authMiddleware } from "./authMiddleware.js";
+import { getUploadUrl } from "./getUploadUrl.js";
+import { removeUrl } from "./removeUrl.js";
 
 router.post("/addB", authMiddleware, addB);
 router.patch("/editB", authMiddleware, editB);
 router.delete("/removeB", authMiddleware, removeB);
 router.post("/search", searchBusiness);
+router.post("/getUploadUrl", authMiddleware, getUploadUrl);
+router.delete("/removeUrl", authMiddleware, removeUrl)
 
 // GET all businesses for logged in owner
 router.get("/businesses/mine", async (req, res) => {
