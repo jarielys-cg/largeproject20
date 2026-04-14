@@ -25,11 +25,15 @@ const LoginModal = ({ isOpen, onClose, defaultBusinessOwner = false, onBusinessS
   try {
     const res = await api.post('/login', { email: form.email, password: form.password })
     localStorage.setItem('token', res.data.token)
+    localStorage.setItem("user", JSON.stringify(res.data.user))
     toast.success(`Hello ${res.data.user.username}!`)
     onClose()
 
     if (form.isBusinessOwner || res.data.user.isBusinessOwner) {
         navigate('/business/dashboard')
+      }
+      else {
+        navigate('/dashboard')
       }
   } catch (err: any) {
     toast.error(err.response?.data?.error || 'Incorrect email or password')
