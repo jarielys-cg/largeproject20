@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import logo from '../../assets/logo.png'
-import { Settings, LogOut, ChevronDown } from 'lucide-react'
+import { Settings, LogOut, ChevronDown, LayoutDashboard, BriefcaseBusinessIcon } from 'lucide-react'
 
 interface Props {
   owner: { firstName: string; lastName: string; username: string } | null
@@ -66,6 +66,28 @@ const BusinessNavbar = ({ owner, onLogout }: Props) => {
               <p className="text-sm font-medium text-gray-900">{owner?.firstName} {owner?.lastName}</p>
               <p className="text-xs text-gray-400">Business Owner</p>
             </div>
+            <button
+              onClick={() => {
+                navigate('/business/dashboard')
+                setProfileDropdown(false)
+              }}
+              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              <BriefcaseBusinessIcon size={16} className="text-gray-500" />
+              Business Dashboard
+            </button>
+            <div className="h-px bg-gray-100" />
+            <button
+              onClick={() => {
+                navigate('/dashboard')
+                setProfileDropdown(false)
+              }}
+              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              <LayoutDashboard size={16} className="text-gray-500" />
+              Dashboard
+            </button>
+            <div className="h-px bg-gray-100" />
             <button className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
               <Settings size={16} className="text-gray-500" />
               Account Settings

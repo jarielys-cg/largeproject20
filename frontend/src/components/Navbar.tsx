@@ -258,6 +258,21 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
 
               {userDropdownOpen && (
                 <div className="absolute top-full right-0 mt-2 w-44 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                  {isBusinessOwner && (
+                    <>
+                      <button
+                        onClick={() => {
+                          navigate("/business/dashboard");
+                          setUserDropdownOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-bm-gray hover:text-bm-coral transition-colors text-left"
+                      >
+                        <BriefcaseBusinessIcon size={16} color="currentColor" />
+                        Business Dashboard
+                      </button>
+                      <div className="h-px bg-gray-100"></div>
+                    </>
+                  )}
                   <button
                     onClick={() => {
                       navigate("/dashboard");
