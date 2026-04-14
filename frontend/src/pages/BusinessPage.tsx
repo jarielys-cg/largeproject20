@@ -154,7 +154,7 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
           </div>
 
           {/* Reviews */}
-          <div className="bg-white rounded-2xl border border-gray-200 p-6">
+          <div id="reviews" className="bg-white rounded-2xl border border-gray-200 p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-4">
               Reviews {totalReviews > 0 && <span className="text-gray-400 font-normal text-base">({totalReviews})</span>}
             </h2>

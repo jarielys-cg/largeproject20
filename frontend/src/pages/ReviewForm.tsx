@@ -47,7 +47,10 @@ const ReviewForm = ({ onLoginClick }: ReviewFormProps) => {
 
   const activeRating = hoveredRating || rating
   const ratingConfig = activeRating > 0 ? RATING_CONFIG [activeRating - 1] : null
-  const hints = business ? (HINT_TAGS[business.category[0]] || HINT_TAGS.default) : HINT_TAGS.default
+  const primaryCategory = business
+    ? (Array.isArray(business.category) ? business.category[0] : business.category)
+    : undefined
+  const hints = primaryCategory ? (HINT_TAGS[primaryCategory] || HINT_TAGS.default) : HINT_TAGS.default
   const minChars = 85
   const remaining = minChars - review.length
 
