@@ -131,7 +131,10 @@ const BusinessDashboard = () => {
   try {
     const token = localStorage.getItem('token')
     const payload = JSON.parse(atob(token!.split('.')[1]))
-    const updatedCategories = [...activeBusiness.category, cat]
+      const existingCategories = Array.isArray(activeBusiness.category)
+        ? activeBusiness.category
+        : (activeBusiness.category ? [activeBusiness.category] : [])
+      const updatedCategories = [...existingCategories, cat]
     const res = await api.patch('/editB', {
       ownerId: payload.userId,
       name: activeBusiness.name,
@@ -149,7 +152,10 @@ const handleRemoveCategory = async (cat: string) => {
   try {
     const token = localStorage.getItem('token')
     const payload = JSON.parse(atob(token!.split('.')[1]))
-    const updatedCategories = activeBusiness.category.filter(c => c !== cat)
+    const existingCategories = Array.isArray(activeBusiness.category)
+      ? activeBusiness.category
+      : (activeBusiness.category ? [activeBusiness.category] : [])
+    const updatedCategories = existingCategories.filter(c => c !== cat)
     const res = await api.patch('/editB', {
       ownerId: payload.userId,
       name: activeBusiness.name,
