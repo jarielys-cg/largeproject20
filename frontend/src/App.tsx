@@ -25,6 +25,18 @@ function App() {
   const [bizSignUpOpen, setBizSignUpOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(Boolean(localStorage.getItem('token')))
 
+  const getHomeRedirectPath = () => {
+    const storedUser = localStorage.getItem('user')
+    if (!storedUser) return '/dashboard'
+
+    try {
+      const parsedUser = JSON.parse(storedUser)
+      return parsedUser?.isBusinessOwner ? '/business/dashboard' : '/dashboard'
+    } catch {
+      return '/dashboard'
+    }
+  }
+
   useEffect(() => {
     const syncAuthFromStorage = () => {
       setIsLoggedIn(Boolean(localStorage.getItem('token')))
@@ -46,7 +58,7 @@ function App() {
           path="/"
           element={
             isLoggedIn
-              ? <Navigate to="/dashboard" replace />
+              ? <Navigate to={getHomeRedirectPath()} replace />
               : <Landing onLoginClick={() => setLoginModalOpen(true)} />
           }
         />
