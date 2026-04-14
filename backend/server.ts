@@ -6,6 +6,7 @@ import cors from "cors";
 import userRoutes from "./api/userRoutes.js";
 import businessRoutes from "./api/businessRoutes.js";
 import reviewRoutes from "./api/review.js";
+import verifyEmailRoutes from "./api/verifyEmail.js";
 
 import "./models/User.js";
 import "./models/Business.js";
@@ -35,6 +36,7 @@ app.use(cors({
 app.use("/api", userRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api", businessRoutes);
+app.use("/api", verifyEmailRoutes);
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
