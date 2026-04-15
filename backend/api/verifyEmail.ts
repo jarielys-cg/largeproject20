@@ -4,6 +4,9 @@ import sgMail from "@sendgrid/mail";
 import crypto from "crypto";
 
 const router = Router();
+const resendCooldowns = new Map<string, number>();
+
+const RESEND_COOLDOWN_MS = 60 * 1000;
 sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 router.get("/verify-email/:token", async (req, res) => {
@@ -37,7 +40,25 @@ router.get("/verify-email/:token", async (req, res) => {
 
 router.post("/resend-email", async (req, res) =>
 {
-    const {  email } = req.body;
+    const { email } = req.body;
+
+    if (!email)
+    {
+        return res.status(400).json({ error: "Email is required" });
+    }
+
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const now = Date.now();
+    const resendAvailableAt = resendCooldowns.get(normalizedEmail) ?? 0;
+
+    if (resendAvailableAt > now)
+    {
+        const retryAfterSeconds = Math.ceil((resendAvailableAt - now) / 1000);
+        return res.status(429).json({
+            error: `Please wait ${retryAfterSeconds} seconds before requesting another verification email.`,
+            retryAfterSeconds
+        });
+    }
 
     if (typeof email !== "string")
     {
@@ -51,18 +72,25 @@ router.post("/resend-email", async (req, res) =>
         return res.status(400).json({ error: "Account not found" });
     }
 
+    if (existingUser.isVerified)
+    {
+        return res.status(400).json({ error: "Account is already verified" });
+    }
+
     try
     {
         existingUser.emailVerificationToken = crypto.randomBytes(32).toString("hex");
         existingUser.emailVerificationExpires = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
         await existingUser.save();
+        resendCooldowns.set(normalizedEmail, now + RESEND_COOLDOWN_MS);
     }
     catch
     {
         return res.status(400).json({ error: "Failed save new token" });
     }
 
-    const verifyLink = `http://colors-lab-cop4331c.xyz/api/verify-email/${existingUser.emailVerificationToken}`;
+    const frontendUrl = (process.env.FRONTEND_URL || "http://colors-lab-cop4331c.xyz").replace(/\/$/, "");
+    const verifyLink = `${frontendUrl}/verify-email/${existingUser.emailVerificationToken}`;
 
     try
     {
@@ -79,7 +107,7 @@ router.post("/resend-email", async (req, res) =>
         `
         });
 
-        res.status(200).json({ success: "Email sent" });
+        res.status(200).json({ success: "Email sent", retryAfterSeconds: 60 });
     }
     catch
     {

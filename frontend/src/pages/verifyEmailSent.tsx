@@ -1,8 +1,72 @@
-import { useNavigate } from 'react-router'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router'
+import toast from 'react-hot-toast'
+import api from '../lib/axios'
 import logo from '../assets/logo.png'
 
 const VerifyEmailSent = () => {
+  const location = useLocation()
   const navigate = useNavigate()
+  const navigationState = location.state as { email?: string; source?: 'signup' | 'login' } | null
+  const [email, setEmail] = useState(navigationState?.email ?? '')
+  const [resendMessage, setResendMessage] = useState('')
+  const [resendLoading, setResendLoading] = useState(false)
+  const [resendCooldown, setResendCooldown] = useState(0)
+
+  const isLoginVerificationState = navigationState?.source === 'login'
+
+  useEffect(() => {
+    if (navigationState?.email) {
+      setEmail(navigationState.email)
+    }
+  }, [navigationState?.email])
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return
+
+    const timer = window.setInterval(() => {
+      setResendCooldown(prev => {
+        if (prev <= 1) {
+          window.clearInterval(timer)
+          return 0
+        }
+
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => window.clearInterval(timer)
+  }, [resendCooldown])
+
+  const handleResend = async () => {
+    const trimmedEmail = email.trim()
+
+    if (!trimmedEmail) {
+      setResendMessage('Please enter the email address for this account.')
+      return
+    }
+
+    setResendLoading(true)
+    setResendMessage('')
+
+    try {
+      const response = await api.post('/resend-email', { email: trimmedEmail })
+      setResendCooldown(response.data?.retryAfterSeconds ?? 60)
+      setResendMessage('Verification email sent. Check your inbox.')
+      toast.success('Verification email sent.')
+    } catch (error: any) {
+      const retryAfterSeconds = error.response?.data?.retryAfterSeconds
+
+      if (error.response?.status === 429 && retryAfterSeconds) {
+        setResendCooldown(retryAfterSeconds)
+      }
+
+      setResendMessage(error.response?.data?.error || 'Unable to resend verification email.')
+      toast.error(error.response?.data?.error || 'Unable to resend verification email.')
+    } finally {
+      setResendLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen from-[#fff7f4] via-white to-[#fef1d1] flex items-center justify-center px-4 py-10">
@@ -17,13 +81,15 @@ const VerifyEmailSent = () => {
 
             <div className="relative mt-16 max-w-md">
               <p className="mb-3 inline-flex rounded-full bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-bm-coral">
-                Verification email sent
+                {isLoginVerificationState ? 'Account not verified' : 'Verification email sent'}
               </p>
               <h1 className="text-4xl font-bold leading-tight sm:text-5xl">
-                Check your inbox to finish creating your account.
+                {isLoginVerificationState ? 'You need to verify your account first.' : 'Check your inbox to finish creating your account.'}
               </h1>
               <p className="mt-4 text-sm leading-6 text-white/85 sm:text-base">
-                We sent a verification link to the email address you used during signup. The link expires in 1 hour.
+                {isLoginVerificationState
+                  ? 'This account has not been verified yet. Resend the verification link to continue.'
+                  : 'We sent a verification link to the email address you used during signup. The link expires in 1 hour.'}
               </p>
             </div>
 
@@ -46,8 +112,43 @@ const VerifyEmailSent = () => {
 
               <h2 className="mt-6 text-3xl font-bold text-bm-dark">Almost there</h2>
               <p className="mt-3 text-sm leading-6 text-gray-600 sm:text-base">
-                Your account is created, but email verification is required before sign in and other account actions will fully work.
+                {isLoginVerificationState
+                  ? 'Your account exists, but you must verify it before signing in.'
+                  : 'Your account is created, but email verification is required before sign in and other account actions will fully work.'}
               </p>
+
+              <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-4 text-left shadow-sm">
+                <label htmlFor="verification-email" className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  Email address
+                </label>
+                <input
+                  id="verification-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email address"
+                  className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-bm-coral focus:outline-none"
+                />
+
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={resendLoading || resendCooldown > 0}
+                  className="mt-4 inline-flex h-12 w-full items-center justify-center rounded-full bg-bm-coral px-8 text-sm font-semibold text-white transition-colors hover:bg-bm-coral-dark disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {resendLoading
+                    ? 'Sending...'
+                    : resendCooldown > 0
+                      ? `Resend available in ${resendCooldown}s`
+                      : 'Resend verification email'}
+                </button>
+
+                {resendMessage && (
+                  <p className={`mt-3 text-sm ${resendMessage.includes('sent') ? 'text-green-700' : 'text-red-600'}`}>
+                    {resendMessage}
+                  </p>
+                )}
+              </div>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
                 <button
