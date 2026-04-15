@@ -8,27 +8,22 @@ import sgMail from "@sendgrid/mail";
 dotenv.config();
 sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
-export const signUp = async (req: Request, res: Response) =>
-{
+export const signUp = async (req: Request, res: Response) => {
     const { firstName, lastName, username, email, password, isBusinessOwner, zipCode } = req.body;
 
     const existingUser = await User.findOne({ email: email });
-    if (existingUser)
-    {
+    if (existingUser) {
         return res.status(400).json({ error: "Email already exists" });
     }
 
     const existingUser2 = await User.findOne({ username: username });
-    if (existingUser2)
-    {
+    if (existingUser2) {
         return res.status(400).json({ error: "Username already exists" });
     }
 
-    try
-    {
+    try {
         const jwtSecret = process.env.JWT_SECRET;
-        if (!jwtSecret)
-        {
+        if (!jwtSecret) {
             return res.status(500).json({ error: "JWT secret is not configured" });
         }
 
@@ -50,7 +45,7 @@ export const signUp = async (req: Request, res: Response) =>
 
         const savedUser = await newUser.save();
 
-        const verifyLink = `http://64.23.138.213/api/verify-email/${emailVerificationToken}`;
+        const verifyLink = `http://colors-lab-cop4331c.xyz/api/verify-email/${emailVerificationToken}`;
 
         await sgMail.send({
             to: savedUser.email,
@@ -80,8 +75,7 @@ export const signUp = async (req: Request, res: Response) =>
             message: "Signup successful. Please verify your email."
         });
     }
-    catch (err)
-    {
+    catch (err) {
         console.log("DB ERROR:", err);
         return res.status(400).json({ error: "Error adding user / sending verification email" });
     }
