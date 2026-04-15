@@ -72,7 +72,8 @@ export const resetPassword = async (req: Request, res: Response) => {
     const savedUser = await (existingUser as any).save();
 
     
-   const { password: _, ...sanitizedUser } = savedUser.toObject();
+   const sanitizedUser = savedUser.toObject();
+   delete sanitizedUser.password;
 
     return res.status(200).json({ savedUser: sanitizedUser });
   } catch {
