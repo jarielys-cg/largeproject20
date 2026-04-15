@@ -5,15 +5,17 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export const login = async (req: Request, res: Response) => 
-{
+export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
-    const existingUser = await User.findOne({ email: email});
-    if (existingUser) 
-    {
-        if(existingUser.password == password)
-        {
+    const existingUser = await User.findOne({ email: email });
+    if (existingUser) {
+
+        if (!existingUser.isVerified) {
+            return res.status(403).json({ error: "Account is not verified" });
+        }
+
+        if (existingUser.password == password) {
             const user = {
                 _id: existingUser._id,
                 username: existingUser.username,
@@ -22,7 +24,7 @@ export const login = async (req: Request, res: Response) =>
             }
 
             const jwtSecret = process.env.JWT_SECRET
-            if(!jwtSecret) {
+            if (!jwtSecret) {
                 return res.status(500).json({ error: "JWT secret is not configured" })
             }
 
@@ -30,20 +32,18 @@ export const login = async (req: Request, res: Response) =>
                 { userId: existingUser._id.toString() },
                 jwtSecret,
                 { expiresIn: "24h" }
-            )       
-             
+            )
+
             return res.status(200).json({
                 token,
                 user
             });
         }
-        else
-        {
+        else {
             return res.status(400).json({ error: "Incorrect password" });
         }
     }
-    else
-    {
+    else {
         return res.status(400).json({ error: "Account not found" });
     }
 };
