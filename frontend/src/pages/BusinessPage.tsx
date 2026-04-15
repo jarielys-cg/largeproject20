@@ -22,18 +22,70 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
   const [reviewsLoading, setReviewsLoading] = useState(true)
   const [expandedImage, setExpandedImage] = useState<string | null>(null)
   const isLoggedIn = Boolean(localStorage.getItem('token'))
-  let parsedUser: { isBusinessOwner?: boolean } | null = null
-  const storedUser = localStorage.getItem('user')
-  if (storedUser) {
-    try {
-      parsedUser = JSON.parse(storedUser)
-    } catch {
-      parsedUser = null
-    }
+
+  const [editingReviewId, setEditingReviewId] = useState<string | null>(null)
+  const [editText, setEditText] = useState('')
+  const [editRating, setEditRating] = useState(0)
+
+  type LocalUser = {
+    _id: string
+    isBusinessOwner?: boolean
   }
+
+  const storedUser = localStorage.getItem('user')
+
+  const parsedUser: LocalUser | null = storedUser ? (JSON.parse(storedUser) as LocalUser) : null
+
+  const currentUserId = parsedUser?._id
+
   const isBusinessOwner = Boolean(parsedUser?.isBusinessOwner)
   const canWriteReview = isLoggedIn && !isBusinessOwner
   const heroImage = business?.image?.find((photo) => photo && photo.trim() !== '') ?? null
+
+  const handleEditClick = (review: Review) => {
+    setEditingReviewId(review._id)
+    setEditText(review.review)
+    setEditRating(review.rating)
+  }
+
+  const handleUpdate = async (reviewId: string) => {
+    if (editText.length < 80) {
+      toast.error("Review must be at least 80 characters")
+      return
+    }
+
+    try {
+      await api.put(`/reviews/${reviewId}`, {
+        rating: editRating,
+        review: editText
+      })
+
+      toast.success("Review updated")
+      setEditingReviewId(null)
+
+      const res = await api.get(`/reviews/business/${businessId}`)
+      setReviews(res.data.reviews)
+      setTotalReviews(res.data.totalReviews)
+
+    } catch {
+      toast.error("Failed to update review")
+    }
+  }
+
+  const handleDelete = async (reviewId: string) => {
+    if (!confirm("Delete this review?")) return
+
+    try {
+      await api.delete(`/reviews/${reviewId}`)
+
+      toast.success("Review deleted")
+      setReviews(prev => prev.filter(r => r._id !== reviewId))
+      setTotalReviews(prev => prev - 1)
+
+    } catch {
+      toast.error("Failed to delete review")
+    }
+  }
 
   useEffect(() => {
     const fetchBusiness = async () => {
@@ -197,38 +249,110 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
               </div>
             ) : (
               <div className="space-y-4">
-                {reviews.map(review => (
-                  <div key={review._id} className="min-w-0 border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-bm-gray flex items-center justify-center shrink-0">
-                          <span className="text-sm font-bold text-bm-coral">U</span>
+                {reviews.map(review => {
+                  const isOwner = review.userId === currentUserId
+
+                  return (
+                    <div key={review._id} className="min-w-0 border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-bm-gray flex items-center justify-center shrink-0">
+                            <span className="text-sm font-bold text-bm-coral">U</span>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">Customer</p>
+                            <p className="text-xs text-gray-400">
+                              {new Date(review.createdAt).toLocaleDateString('en-US', {
+                                year: 'numeric', month: 'long', day: 'numeric'
+                              })}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">Customer</p>
-                          <p className="text-xs text-gray-400">
-                            {new Date(review.createdAt).toLocaleDateString('en-US', {
-                              year: 'numeric', month: 'long', day: 'numeric'
-                            })}
-                          </p>
+                        <div className="flex flex-col items-end gap-1">
+                          <div className="flex gap-0.5">
+                            {[1, 2, 3, 4, 5].map(s => (
+                              <Star
+                                key={s}
+                                size={14}
+                                fill={s <= review.rating ? getRatingColor(review.rating) : '#d1d5db'}
+                                stroke={s <= review.rating ? getRatingColor(review.rating) : '#d1d5db'}
+                              />
+                            ))}
+                          </div>
+                          {isOwner && (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleEditClick(review)}
+                                className="text-xs text-blue-500 hover:underline"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDelete(review._id)}
+                                className="text-xs text-red-500 hover:underline"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          )}
+
                         </div>
                       </div>
-                      <div className="flex gap-0.5">
-                        {[1, 2, 3, 4, 5].map(s => (
-                          <Star
-                            key={s}
-                            size={14}
-                            fill={s <= review.rating ? getRatingColor(review.rating) : '#d1d5db'}
-                            stroke={s <= review.rating ? getRatingColor(review.rating) : '#d1d5db'}
+                      {editingReviewId === review._id ? (
+                        <div className="pl-12 space-y-2">
+
+                          {/* Star selector */}
+                          <div className="flex gap-1">
+                            {[1, 2, 3, 4, 5].map(s => (
+                              <Star
+                                key={s}
+                                size={20}
+                                onClick={() => setEditRating(s)}
+                                className="cursor-pointer"
+                                fill={s <= editRating ? '#F26B5B' : '#d1d5db'}
+                                stroke={s <= editRating ? '#F26B5B' : '#d1d5db'}
+                              />
+                            ))}
+                          </div>
+
+                          {/* Text */}
+                          <textarea
+                            value={editText}
+                            onChange={(e) => setEditText(e.target.value)}
+                            className="w-full border rounded-lg p-2 text-sm"
                           />
-                        ))}
-                      </div>
+
+                          {/* Buttons */}
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleUpdate(review._id)}
+                              className="text-sm bg-bm-coral text-white px-3 py-1 rounded"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={() => setEditingReviewId(null)}
+                              className="text-sm text-gray-500"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+
+                          {editText.length < 80 && (
+                            <p className="text-xs text-red-400">
+                              Review must be at least 80 characters
+                            </p>
+                          )}
+
+                        </div>
+                      ) : (
+                        <p className="w-full min-w-0 pl-12 text-sm leading-relaxed text-gray-700 break-words break-normal [overflow-wrap:break-word]">
+                          {review.review}
+                        </p>
+                      )}
                     </div>
-                    <p className="w-full min-w-0 pl-12 text-sm leading-relaxed text-gray-700 break-words break-normal [overflow-wrap:break-word]">
-                      {review.review}
-                    </p>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </div>
@@ -299,32 +423,32 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
           {/* Photos */}
           {business?.image && business.image.filter(p => p && p.trim() !== '').length > 0 && (
             <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                <h2 className="text-lg font-bold text-gray-900 mb-3">Photos</h2>
-                <div className="grid grid-cols-2 gap-2">
+              <h2 className="text-lg font-bold text-gray-900 mb-3">Photos</h2>
+              <div className="grid grid-cols-2 gap-2">
                 {business.image
-                    .filter(p => p && p.trim() !== '')
-                    .slice(0, 4)
-                    .map((photo, i) => (
+                  .filter(p => p && p.trim() !== '')
+                  .slice(0, 4)
+                  .map((photo, i) => (
                     <div key={i} className="aspect-square rounded-lg overflow-hidden">
-                        <img
-                          src={photo}
-                          alt={`${business.name} ${i + 1}`}
-                          role="button"
-                          tabIndex={0}
-                          onClick={() => setExpandedImage(photo)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault()
-                              setExpandedImage(photo)
-                            }
-                          }}
-                          className="h-full w-full cursor-zoom-in object-cover"
-                        />
+                      <img
+                        src={photo}
+                        alt={`${business.name} ${i + 1}`}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => setExpandedImage(photo)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            setExpandedImage(photo)
+                          }
+                        }}
+                        className="h-full w-full cursor-zoom-in object-cover"
+                      />
                     </div>
-                    ))}
-                </div>
+                  ))}
+              </div>
             </div>
-            )}
+          )}
 
         </div>
       </div>
