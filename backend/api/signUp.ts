@@ -45,7 +45,8 @@ export const signUp = async (req: Request, res: Response) => {
 
         const savedUser = await newUser.save();
 
-        const verifyLink = `http://colors-lab-cop4331c.xyz/api/verify-email/${emailVerificationToken}`;
+        const frontendUrl = (process.env.FRONTEND_URL || "http://colors-lab-cop4331c.xyz").replace(/\/$/, "");
+        const verifyLink = `${frontendUrl}/verify-email/${emailVerificationToken}`;
 
         await sgMail.send({
             to: savedUser.email,

@@ -3,6 +3,8 @@ import { Navigate, Routes, Route, useLocation } from 'react-router'
 import { Toaster } from 'react-hot-toast'
 import Landing from './pages/landing'
 import UserSignUp from './pages/userSignUp'
+import VerifyEmailSent from './pages/verifyEmailSent'
+import VerifyEmail from './pages/verifyEmail'
 import LoginModal from './components/forms/loginModal'
 import WriteReview from "./pages/WriteReview"
 import ReviewForm from "./pages/ReviewForm"
@@ -63,6 +65,8 @@ function App() {
           }
         />
         <Route path="/signup" element={<UserSignUp onLoginClick={() => setLoginModalOpen(true)} />} />
+        <Route path="/verify-email-sent" element={<VerifyEmailSent />} />
+        <Route path="/verify-email/:token" element={<VerifyEmail onLoginClick={() => setLoginModalOpen(true)} />} />
         <Route path="/write-review" element={<WriteReview onLoginClick={() => setLoginModalOpen(true)} />} />
         <Route path="/review/:businessId" element={<ReviewForm onLoginClick={() => setLoginModalOpen(true)} />} />
         <Route path="/business/dashboard" element={<BusinessDashboard />} />
