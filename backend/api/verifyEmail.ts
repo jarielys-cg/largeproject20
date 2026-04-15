@@ -4,6 +4,7 @@ import sgMail from "@sendgrid/mail";
 import crypto from "crypto";
 
 const router = Router();
+sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 router.get("/verify-email/:token", async (req, res) => {
     try
@@ -38,6 +39,11 @@ router.post("/resend-email", async (req, res) =>
 {
     const {  email } = req.body;
 
+    if (typeof email !== "string")
+    {
+        return res.status(400).json({ error: "Invalid email" });
+    }
+
     const existingUser = await User.findOne({ email: email });
 
     if(!existingUser)
@@ -45,9 +51,16 @@ router.post("/resend-email", async (req, res) =>
         return res.status(400).json({ error: "Account not found" });
     }
 
-    existingUser.emailVerificationToken = crypto.randomBytes(32).toString("hex");
-    existingUser.emailVerificationExpires = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
-    await existingUser.save();
+    try
+    {
+        existingUser.emailVerificationToken = crypto.randomBytes(32).toString("hex");
+        existingUser.emailVerificationExpires = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
+        await existingUser.save();
+    }
+    catch
+    {
+        return res.status(400).json({ error: "Failed save new token" });
+    }
 
     const verifyLink = `http://colors-lab-cop4331c.xyz/api/verify-email/${existingUser.emailVerificationToken}`;
 
@@ -70,7 +83,7 @@ router.post("/resend-email", async (req, res) =>
     }
     catch
     {
-        return res.status(400).json({ error: "Failed to send email" });
+        return res.status(500).json({ error: "Failed to send email" });
     }
     
 });
