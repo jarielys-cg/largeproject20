@@ -7,6 +7,7 @@ const router = Router();
 const resendCooldowns = new Map<string, number>();
 
 const RESEND_COOLDOWN_MS = 60 * 1000;
+sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 router.get("/verify-email/:token", async (req, res) => {
     try
@@ -59,7 +60,12 @@ router.post("/resend-email", async (req, res) =>
         });
     }
 
-    const existingUser = await User.findOne({ email: normalizedEmail });
+    if (typeof email !== "string")
+    {
+        return res.status(400).json({ error: "Invalid email" });
+    }
+
+    const existingUser = await User.findOne({ email: email });
 
     if(!existingUser)
     {
@@ -71,10 +77,17 @@ router.post("/resend-email", async (req, res) =>
         return res.status(400).json({ error: "Account is already verified" });
     }
 
-    existingUser.emailVerificationToken = crypto.randomBytes(32).toString("hex");
-    existingUser.emailVerificationExpires = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
-    await existingUser.save();
-    resendCooldowns.set(normalizedEmail, now + RESEND_COOLDOWN_MS);
+    try
+    {
+        existingUser.emailVerificationToken = crypto.randomBytes(32).toString("hex");
+        existingUser.emailVerificationExpires = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
+        await existingUser.save();
+        resendCooldowns.set(normalizedEmail, now + RESEND_COOLDOWN_MS);
+    }
+    catch
+    {
+        return res.status(400).json({ error: "Failed save new token" });
+    }
 
     const frontendUrl = (process.env.FRONTEND_URL || "http://colors-lab-cop4331c.xyz").replace(/\/$/, "");
     const verifyLink = `${frontendUrl}/verify-email/${existingUser.emailVerificationToken}`;
@@ -98,7 +111,7 @@ router.post("/resend-email", async (req, res) =>
     }
     catch
     {
-        return res.status(400).json({ error: "Failed to send email" });
+        return res.status(500).json({ error: "Failed to send email" });
     }
     
 });
