@@ -129,8 +129,10 @@ export const searchBusiness = async(req: Request, res: Response) => {
             Business.countDocuments(combinedResult)
         ]);
 
+        const formattedBusinesses = businesses.map(formatBusiness);
+
         res.json({
-            data: businesses,
+            data: formattedBusinesses,
             page,
             totalPages: Math.ceil(total / pageSize),
             total
@@ -140,4 +142,13 @@ export const searchBusiness = async(req: Request, res: Response) => {
         console.error("Search error: ", err);
         res.status(500).json({ error: "Server error" });
     }
+};
+
+const formatBusiness = (business: any) => {
+  const baseUrl = "https://marketplacegroup20.sfo3.digitaloceanspaces.com";
+
+  return {
+    ...business.toObject(),
+    image: business.image.map((key: string) => `${baseUrl}/${key}`)
+  };
 };
