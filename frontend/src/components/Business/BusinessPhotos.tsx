@@ -1,4 +1,5 @@
 import { ImagePlus, Plus, Trash2 } from 'lucide-react'
+import { getImageUrl } from '../../utils/imageUrl'
 
 interface Props {
   photos: string[]
@@ -22,7 +23,7 @@ const BusinessPhotos = ({ photos, uploading, onUpload, onRemove }: Props) => {
         <div className="grid grid-cols-3 gap-3">
           {photos.map((photo, i) => (
             <div key={i} className="relative group aspect-square">
-              <img src={photo} alt="" className="w-full h-full object-cover rounded-xl" />
+              <img src={getImageUrl(photo)} alt="" className="w-full h-full object-cover rounded-xl" />
               <button
                 onClick={() => onRemove(photo)}
                 className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full items-center justify-center hidden group-hover:flex transition-all"

@@ -6,6 +6,7 @@ import Navbar from '../components/Navbar'
 import type { Business, Review } from '../types'
 import toast from 'react-hot-toast'
 import { getRatingColor } from "../utils/ratingConfig"
+import { getImageUrl } from "../utils/imageUrl"
 
 interface ReviewFormProps {
   onLoginClick?: () => void
@@ -116,7 +117,7 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
               {/* Logo */}
               <div className="w-20 h-20 rounded-xl bg-bm-gray border border-gray-200 flex items-center justify-center shrink-0 overflow-hidden">
                 {business?.image?.[0] ? (
-                  <img src={business.image[0]} alt={business.name} className="w-full h-full object-cover" />
+                  <img src={getImageUrl(business.image[0])} alt={business.name} className="w-full h-full object-cover" />
                 ) : (
                   <Store size={32} className="text-bm-coral" />
                 )}
@@ -307,7 +308,7 @@ const BusinessPage = ({ onLoginClick }: ReviewFormProps) => {
                     .map((photo, i) => (
                     <div key={i} className="aspect-square rounded-lg overflow-hidden">
                         <img
-                          src={photo}
+                          src={getImageUrl(photo)}
                           alt={`${business.name} ${i + 1}`}
                           role="button"
                           tabIndex={0}

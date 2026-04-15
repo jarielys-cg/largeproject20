@@ -6,6 +6,7 @@ import api from '../lib/axios'
 import toast from 'react-hot-toast'
 import type { Business } from "../types"
 import { RATING_CONFIG } from "../utils/ratingConfig"
+import { getImageUrl } from "../utils/imageUrl"
 
 interface ReviewFormProps {
   onLoginClick?: () => void
@@ -111,7 +112,7 @@ const ReviewForm = ({ onLoginClick }: ReviewFormProps) => {
         {business && (
           <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-200">
             {business.image?.[0] ? (
-              <img src={business.image[0]} alt={business.name} className="w-14 h-14 rounded-lg object-cover" />
+              <img src={getImageUrl(business.image[0])} alt={business.name} className="w-14 h-14 rounded-lg object-cover" />
             ) : (
               <div className="w-14 h-14 bg-bm-gray rounded-lg flex items-center justify-center shrink-0">
                 <Store size={28} className="text-bm-coral" />

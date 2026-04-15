@@ -1,5 +1,6 @@
 import { MapPin, Phone } from "lucide-react";
 import type { Business } from "../types";
+import { getImageUrl } from "../utils/imageUrl";
 
 interface BusinessCardProps {
   business: Business;
@@ -7,7 +8,7 @@ interface BusinessCardProps {
 }
 
 const BusinessCard = ({ business, onClick }: BusinessCardProps) => {
-  const primaryImage = business.image?.[0];
+  const primaryImage = getImageUrl(business.image?.[0]);
   const categoryText = Array.isArray(business.category)
     ? business.category.length
       ? business.category.join(", ")

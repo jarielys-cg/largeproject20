@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router'
 import Navbar from '../components/Navbar'
 import { Search, Store } from 'lucide-react'
 import api from '../lib/axios'
+import { getImageUrl } from '../utils/imageUrl'
 import review from '../assets/images/OnlineReview.png'
 import feedbackIllustration from '../assets/images/feedbackIllustration.png'
 import type { Business } from "../types"
@@ -109,7 +110,7 @@ const WriteReview = ({ onLoginClick }: WriteReviewProps) => {
                           {/* Business image or fallback */}
                           {biz.image?.[0] ? (
                             <img
-                              src={biz.image[0]}
+                              src={getImageUrl(biz.image[0])}
                               alt={biz.name}
                               className="w-12 h-12 rounded-lg object-cover"
                             />

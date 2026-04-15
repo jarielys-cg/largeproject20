@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import type { Business } from "../types";
 import { HashLink } from "react-router-hash-link";
+import { getImageUrl } from "../utils/imageUrl";
 
 interface BusinessCardModalProps {
   business: Business | null;
@@ -20,7 +21,7 @@ const BusinessCardModal = ({
 
   if (!isOpen || !business) return null;
 
-  const primaryImage = business.image?.[0];
+  const primaryImage = getImageUrl(business.image?.[0]);
   const isLoggedIn = Boolean(localStorage.getItem("token"));
   let parsedUser: { isBusinessOwner?: boolean } | null = null;
   const storedUser = localStorage.getItem("user");
@@ -146,7 +147,7 @@ const BusinessCardModal = ({
                     {business.image.map((image, index) => (
                       <img
                         key={`${image}-${index}`}
-                        src={image}
+                        src={getImageUrl(image)}
                         alt={`${business.name} ${index + 1}`}
                         className="h-24 w-full cursor-zoom-in rounded-xl object-cover transition-transform duration-300 hover:scale-105"
                         role="button"

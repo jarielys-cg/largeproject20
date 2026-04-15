@@ -154,7 +154,7 @@ class ApiService {
     final imageBytes = await imageFile.readAsBytes();
     final putRes = await http.put(
       Uri.parse(signedUrl),
-      headers: {'Content-Type': 'image/jpeg'},
+      headers: {'Content-Type': 'image/jpeg', 'x-amz-acl': 'public-read'},
       body: imageBytes,
     );
     if (putRes.statusCode == 200 || putRes.statusCode == 204) {

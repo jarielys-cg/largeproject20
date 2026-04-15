@@ -8,6 +8,7 @@ import BusinessNavbar from "../components/Business/BusinessNavbar"
 import BusinessSidebar from "../components/Business/BusinessSidebar"
 import BusinessCategories from "../components/Business/BusinessCategories"
 import BusinessPhotos from "../components/Business/BusinessPhotos"
+import { getImageUrl } from '../utils/imageUrl'
 import BusinessSignUpModal from '../components/forms/BusinessSignUpModal'
 import BusinessDescription from "../components/Business/BusinessDescription"
 import BusinessInfo from "../components/Business/BusinessInfo"
@@ -298,7 +299,7 @@ const BusinessDashboard = () => {
               <div className="relative group shrink-0">
                 <div className="w-24 h-24 rounded-full bg-bm-gray border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-bm-coral transition-colors group-hover:bg-red-50 overflow-hidden">
                   {activeBusiness?.image?.[0] ? (
-                    <img src={activeBusiness.image[0]} alt="logo" className="w-full h-full object-cover" />
+                    <img src={getImageUrl(activeBusiness.image[0])} alt="logo" className="w-full h-full object-cover" />
                   ) : (
                     <>
                       <ImagePlus size={20} className="text-gray-400 group-hover:text-bm-coral" />
