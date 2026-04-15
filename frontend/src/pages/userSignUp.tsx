@@ -36,7 +36,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   try {
     await api.post('/signup', form)
     toast.success(`Welcome to BizMart, ${form.username}!`, { duration: 10000 })
-    navigate('/')
+    navigate('/verify-email-sent')
   } catch (error: any) {
     const message = error.response?.data?.error || 'Failed to create account. Try again'
     toast.error(message, { duration: 5000 })
