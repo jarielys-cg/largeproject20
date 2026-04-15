@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import Business from "../models/Business.js";
 import mongoose from "mongoose";
+import { mapBusinessImageUrls } from "./spacesConfig.js";
 
 export const addB = async (req: Request, res: Response) => 
 {
@@ -37,7 +38,7 @@ export const addB = async (req: Request, res: Response) =>
     try 
     {
         const savedB = await newBusiness.save(); // saves to MongoDB
-        res.status(201).json(savedB);       // respond with the saved user
+        res.status(201).json(await mapBusinessImageUrls(savedB));       // respond with the saved business
     } 
     catch
     {

@@ -138,11 +138,18 @@ class ApiService {
 
   static Future<Map<String, dynamic>> uploadBusinessImage(String businessName, File imageFile) async {
     final headers = await _authHeaders();
+    final ext = imageFile.path.toLowerCase();
+    final fileType = ext.endsWith('.png')
+        ? 'image/png'
+        : ext.endsWith('.webp')
+            ? 'image/webp'
+            : 'image/jpeg';
+
     // Step 1: get presigned upload URL
     final urlRes = await http.post(
       Uri.parse('$baseUrl/getUploadUrl'),
       headers: headers,
-      body: jsonEncode({'name': businessName, 'fileType': 'image/jpeg'}),
+      body: jsonEncode({'name': businessName, 'fileType': fileType}),
     );
     if (urlRes.statusCode != 200) {
       final err = jsonDecode(urlRes.body);
@@ -150,17 +157,30 @@ class ApiService {
     }
     final urlData = jsonDecode(urlRes.body);
     final signedUrl = urlData['url'] as String;
+    final key = urlData['key'] as String;
+
     // Step 2: PUT image bytes directly to S3
     final imageBytes = await imageFile.readAsBytes();
     final putRes = await http.put(
       Uri.parse(signedUrl),
-      headers: {'Content-Type': 'image/jpeg'},
+      headers: {
+        'Content-Type': fileType,
+      },
       body: imageBytes,
     );
     if (putRes.statusCode == 200 || putRes.statusCode == 204) {
-      return {'success': true};
+      final confirmRes = await http.post(
+        Uri.parse('$baseUrl/confirmUpload'),
+        headers: headers,
+        body: jsonEncode({'name': businessName, 'key': key}),
+      );
+      if (confirmRes.statusCode == 200) {
+        return {'success': true};
+      }
+      final err = jsonDecode(confirmRes.body);
+      return {'success': false, 'error': err['error'] ?? 'Failed to confirm upload'};
     }
-    return {'success': false, 'error': 'Failed to upload image'};
+    return {'success': false, 'error': 'Failed to upload image (${putRes.statusCode})'};
   }
 
   static Future<Map<String, dynamic>> removeBusinessImage(String businessName, String key) async {

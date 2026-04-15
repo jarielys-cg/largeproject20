@@ -1,6 +1,7 @@
 // Search API - search and display businesses based on name, category, and/or location
 import type { Request, Response } from "express";
 import Business from "../models/Business.js";
+import { mapBusinessImageUrls } from "./spacesConfig.js";
 
 const STATE_NAME_TO_ABBREVIATION: Record<string, string> = {
     "alabama": "AL",
@@ -130,7 +131,7 @@ export const searchBusiness = async(req: Request, res: Response) => {
         ]);
 
         res.json({
-            data: businesses,
+            data: await Promise.all(businesses.map((business) => mapBusinessImageUrls(business))),
             page,
             totalPages: Math.ceil(total / pageSize),
             total

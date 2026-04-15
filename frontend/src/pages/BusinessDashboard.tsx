@@ -11,6 +11,7 @@ import BusinessPhotos from "../components/Business/BusinessPhotos"
 import BusinessSignUpModal from '../components/forms/BusinessSignUpModal'
 import BusinessDescription from "../components/Business/BusinessDescription"
 import BusinessInfo from "../components/Business/BusinessInfo"
+import { toImageKey } from '../utils/imageUrl'
 
 interface ReviewStats { count: number; avgRating: number }
 interface Owner { _id: string; firstName: string; lastName: string; username: string }
@@ -46,13 +47,19 @@ const BusinessDashboard = () => {
     }
     fetchOwner()
   }, [])
-  const fetchBusinesses = async () => {
+  const fetchBusinesses = async (preferredBusinessId?: string) => {
     try {
       const res = await api.get('/businesses/mine')
       setBusinesses(res.data)
       if (res.data.length > 0) {
-        setActiveBusiness(res.data[0])
-        setTempName(res.data[0].name)
+        const preferred = preferredBusinessId
+          ? res.data.find((business: Business) => business._id === preferredBusinessId)
+          : null
+        const selected = preferred ?? res.data[0]
+        setActiveBusiness(selected)
+        setTempName(selected.name)
+      } else {
+        setActiveBusiness(null)
       }
     } catch {
       setBusinesses([])
@@ -166,27 +173,56 @@ const BusinessDashboard = () => {
     if (!activeBusiness || !e.target.files) return
     setUploadingPhoto(true)
     try {
-      const formData = new FormData()
-      Array.from(e.target.files).forEach(file => formData.append('photos', file))
-      const res = await api.post(`/businesses/${activeBusiness._id}/photos`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
-      setActiveBusiness(res.data)
-      setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
+      const files = Array.from(e.target.files)
+
+      for (const file of files) {
+        const uploadUrlRes = await api.post('/getUploadUrl', {
+          name: activeBusiness.name,
+          fileType: file.type,
+        })
+
+        const { url, key } = uploadUrlRes.data
+
+        const uploadRes = await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': file.type,
+          },
+          body: file,
+        })
+
+        if (!uploadRes.ok) {
+          const errorText = await uploadRes.text()
+          throw new Error(`Failed to upload to Spaces: ${uploadRes.status} ${errorText}`)
+        }
+
+        await api.post('/confirmUpload', {
+          name: activeBusiness.name,
+          key,
+        })
+      }
+
+      await fetchBusinesses(activeBusiness._id)
       toast.success('Photo uploaded successfully.')
     } catch {
       toast.error('Failed to upload photo. Please try again.')
     } finally {
       setUploadingPhoto(false)
+      e.target.value = ''
     }
   }
 
   const handleRemovePhoto = async (photoUrl: string) => {
     if (!activeBusiness) return
     try {
-      const res = await api.delete(`/businesses/${activeBusiness._id}/photos`, { data: { photoUrl } })
-      setActiveBusiness(res.data)
-      setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
+      const key = toImageKey(photoUrl)
+      await api.delete('/removeUrl', {
+        data: {
+          name: activeBusiness.name,
+          key,
+        },
+      })
+      await fetchBusinesses(activeBusiness._id)
     } catch {
       toast.error('Failed to remove photo. Please try again.')
     }

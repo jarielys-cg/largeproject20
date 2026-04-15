@@ -3,12 +3,13 @@ import mongoose from "mongoose";
 import Business from "../models/Business.js";
 import dotenv from "dotenv";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { spacesConfig, toSpaceKey } from "./spacesConfig.js";
 
 dotenv.config();
 
 const s3 = new S3Client({
-  region: "us-east-1", // required but ignored by Spaces
-  endpoint: "https://sfo3.digitaloceanspaces.com",
+    region: "us-east-1", // required by SDK; Spaces routes by endpoint
+    endpoint: spacesConfig.endpoint,
   credentials: {
     accessKeyId: process.env.SPACES_KEY!,
     secretAccessKey: process.env.SPACES_SECRET!,
@@ -19,6 +20,11 @@ export const removeUrl = async (req: Request, res: Response) =>
 {
     const ownerId = (req as any).user.id;
     const { name, key } = req.body;
+    const normalizedKey = toSpaceKey(key);
+
+    if (!name || !normalizedKey) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
 
     if(!mongoose.isValidObjectId(ownerId))
     {
@@ -37,7 +43,7 @@ export const removeUrl = async (req: Request, res: Response) =>
         const result = await Business.updateOne(
         { ownerId: ownerObjectId, name },
         {
-            $pull: { image: key }
+            $pull: { image: normalizedKey }
         }
         );
         if (result.matchedCount === 0) 
@@ -58,8 +64,8 @@ export const removeUrl = async (req: Request, res: Response) =>
             {
                 await s3.send(
                 new DeleteObjectCommand({
-                Bucket: "marketplacegroup20",
-                Key: key,
+                Bucket: spacesConfig.bucket,
+                Key: normalizedKey,
                 })
             );
             }

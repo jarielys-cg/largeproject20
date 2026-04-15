@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import Business from "../models/Business.js";
 import mongoose from "mongoose";
+import { mapBusinessImageUrls } from "./spacesConfig.js";
 
 export const editB = async (req: Request, res: Response) => {
     const { name, newName, category, description, address, city, state, zipCode, phone, websiteLink, } = req.body;
@@ -37,7 +38,7 @@ export const editB = async (req: Request, res: Response) => {
         });
 
         const savedBusiness = await existingBusiness.save();
-        res.status(200).json(savedBusiness);
+        res.status(200).json(await mapBusinessImageUrls(savedBusiness));
     }
     catch {
         return res.status(400).json({ error: "Error updating business" });

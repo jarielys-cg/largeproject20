@@ -4,12 +4,13 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import Business from "../models/Business.js";
+import { spacesConfig, toPublicImageUrl } from "./spacesConfig.js";
 
 dotenv.config();
 
 const s3 = new S3Client({
-  region: "us-east-1", // required but ignored by Spaces
-  endpoint: "https://sfo3.digitaloceanspaces.com",
+  region: "us-east-1", // required by SDK; Spaces routes by endpoint
+  endpoint: spacesConfig.endpoint,
   credentials: {
     accessKeyId: process.env.SPACES_KEY!,
     secretAccessKey: process.env.SPACES_SECRET!,
@@ -20,6 +21,10 @@ export const getUploadUrl = async (req: Request, res: Response) =>
 {
     const ownerId = (req as any).user.id;
     const { name, fileType } = req.body;
+
+    if (!name || !fileType) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
 
     const mimeToExt: Record<string, string> = {
     "image/jpeg": "jpg",
@@ -45,30 +50,20 @@ export const getUploadUrl = async (req: Request, res: Response) =>
         return res.status(404).json({ error: "Business not found" });
     }
     try {
-        const fileName = `uploads/${Date.now()}.${extension}`;
+      const fileName = `uploads/${ownerId}/${Date.now()}.${extension}`;
 
         const command = new PutObjectCommand({
-        Bucket: "marketplacegroup20",
+      Bucket: spacesConfig.bucket,
         Key: fileName,
-        ContentType: `image/${extension}`,
-        ACL: "public-read",
+      ContentType: fileType,
         });
 
         const url = await getSignedUrl(s3, command, { expiresIn: 60 });
 
-        try
-        {
-          existingBusiness.image.push(fileName);
-          await existingBusiness.save();
-        }
-        catch
-        {
-          return res.status(400).json({ error: "Failed to upload to database" });
-        }
-
         res.json({
         url,
         key: fileName,
+          publicUrl: toPublicImageUrl(fileName),
         });
   } 
   catch
