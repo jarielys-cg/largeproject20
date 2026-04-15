@@ -1,6 +1,29 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/business.dart';
 import '../services/api_service.dart';
+
+class _PhoneInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    final digits = newValue.text.replaceAll(RegExp(r'[^\d]'), '');
+    if (digits.isEmpty) return newValue.copyWith(text: '');
+    final buf = StringBuffer();
+    for (int i = 0; i < digits.length && i < 10; i++) {
+      if (i == 0) buf.write('(');
+      if (i == 3) buf.write(') ');
+      if (i == 6) buf.write('-');
+      buf.write(digits[i]);
+    }
+    final formatted = buf.toString();
+    return newValue.copyWith(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}
 
 const List<String> kCategories = [
   'Restaurants',
@@ -30,7 +53,9 @@ class _AddEditBusinessScreenState extends State<AddEditBusinessScreen> {
   late final TextEditingController _phoneCtrl;
   late final TextEditingController _websiteCtrl;
   List<String> _selectedCategories = [];
+  List<String> _images = [];
   bool _loading = false;
+  bool _uploadingImage = false;
   String? _error;
 
   bool get _isEditing => widget.business != null;
@@ -48,6 +73,7 @@ class _AddEditBusinessScreenState extends State<AddEditBusinessScreen> {
     _phoneCtrl = TextEditingController(text: b?.phone ?? '');
     _websiteCtrl = TextEditingController(text: b?.websiteLink ?? '');
     _selectedCategories = List.from(b?.category ?? []);
+    _images = List.from(b?.image ?? []);
   }
 
   @override
@@ -61,6 +87,36 @@ class _AddEditBusinessScreenState extends State<AddEditBusinessScreen> {
     _phoneCtrl.dispose();
     _websiteCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickAndUploadImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    if (picked == null || !mounted) return;
+    setState(() => _uploadingImage = true);
+    final result = await ApiService.uploadBusinessImage(_nameCtrl.text.trim(), File(picked.path));
+    if (!mounted) return;
+    setState(() => _uploadingImage = false);
+    if (result['success']) {
+      // Refresh business to get updated image list
+      final updated = await ApiService.getBusinessById(widget.business!.id);
+      if (!mounted) return;
+      if (updated != null) setState(() => _images = List.from(updated.image));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result['error'] ?? 'Upload failed')));
+    }
+  }
+
+  Future<void> _removeImage(String imageUrl) async {
+    // Extract key from URL
+    final key = imageUrl.replaceFirst('https://marketplacegroup20.sfo3.digitaloceanspaces.com/', '');
+    final result = await ApiService.removeBusinessImage(_nameCtrl.text.trim(), key);
+    if (!mounted) return;
+    if (result['success']) {
+      setState(() => _images.remove(imageUrl));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result['error'] ?? 'Remove failed')));
+    }
   }
 
   Future<void> _submit() async {
@@ -166,9 +222,70 @@ class _AddEditBusinessScreenState extends State<AddEditBusinessScreen> {
               const SizedBox(height: 14),
               _field(_zipCtrl, 'Zip Code', keyboardType: TextInputType.number),
               const SizedBox(height: 14),
-              _field(_phoneCtrl, 'Phone', keyboardType: TextInputType.phone),
+              TextFormField(
+                controller: _phoneCtrl,
+                keyboardType: TextInputType.phone,
+                inputFormatters: [_PhoneInputFormatter()],
+                decoration: const InputDecoration(
+                  labelText: 'Phone',
+                  hintText: '(555) 555-5555',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) return null;
+                  final phoneRegex = RegExp(r'^\(\d{3}\) \d{3}-\d{4}$');
+                  if (!phoneRegex.hasMatch(v.trim())) return 'Format: (###) ###-####';
+                  return null;
+                },
+              ),
               const SizedBox(height: 14),
               _field(_websiteCtrl, 'Website', keyboardType: TextInputType.url),
+              if (_isEditing) ...[
+                const SizedBox(height: 14),
+                const Text('Photos', style: TextStyle(fontWeight: FontWeight.w600)),
+                const SizedBox(height: 8),
+                if (_images.isNotEmpty)
+                  SizedBox(
+                    height: 100,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _images.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      itemBuilder: (_, i) => Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(_images[i], width: 100, height: 100, fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Container(width: 100, height: 100, color: Colors.grey[200], child: const Icon(Icons.broken_image))),
+                          ),
+                          Positioned(
+                            top: 2,
+                            right: 2,
+                            child: GestureDetector(
+                              onTap: () => _removeImage(_images[i]),
+                              child: Container(
+                                decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+                                child: const Icon(Icons.close, color: Colors.white, size: 18),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  onPressed: _uploadingImage ? null : _pickAndUploadImage,
+                  icon: _uploadingImage
+                      ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Icon(Icons.add_photo_alternate_outlined),
+                  label: Text(_uploadingImage ? 'Uploading...' : 'Add Photo'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFFF26B5B),
+                    side: const BorderSide(color: Color(0xFFF26B5B)),
+                  ),
+                ),
+              ],
               const SizedBox(height: 28),
               SizedBox(
                 width: double.infinity,

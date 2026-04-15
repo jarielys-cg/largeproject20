@@ -92,8 +92,7 @@ class AuthService {
     );
     final data = jsonDecode(response.body);
     if (response.statusCode == 200) {
-      await _saveSession(data['token'], data['savedUser']);
-      return {'success': true, 'user': User.fromJson(data['savedUser'])};
+      return {'success': true};
     }
     return {'success': false, 'error': data['error'] ?? 'Sign up failed'};
   }

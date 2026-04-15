@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../config.dart';
 import '../models/business.dart';
@@ -14,11 +15,11 @@ class ApiService {
     };
   }
 
-  static Future<Map<String, dynamic>> searchBusinesses(String query, {int page = 1}) async {
+  static Future<Map<String, dynamic>> searchBusinesses(String query, {String location = '', int page = 1}) async {
     final response = await http.post(
       Uri.parse('$baseUrl/search'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'search': query, 'page': page}),
+      body: jsonEncode({'search': query, 'location': location, 'page': page}),
     );
     final data = jsonDecode(response.body);
     if (response.statusCode == 200) {
@@ -133,6 +134,45 @@ class ApiService {
       return {'success': true};
     }
     return {'success': false, 'error': data['message'] ?? 'Failed to submit review'};
+  }
+
+  static Future<Map<String, dynamic>> uploadBusinessImage(String businessName, File imageFile) async {
+    final headers = await _authHeaders();
+    // Step 1: get presigned upload URL
+    final urlRes = await http.post(
+      Uri.parse('$baseUrl/getUploadUrl'),
+      headers: headers,
+      body: jsonEncode({'name': businessName, 'fileType': 'image/jpeg'}),
+    );
+    if (urlRes.statusCode != 200) {
+      final err = jsonDecode(urlRes.body);
+      return {'success': false, 'error': err['error'] ?? 'Failed to get upload URL'};
+    }
+    final urlData = jsonDecode(urlRes.body);
+    final signedUrl = urlData['url'] as String;
+    // Step 2: PUT image bytes directly to S3
+    final imageBytes = await imageFile.readAsBytes();
+    final putRes = await http.put(
+      Uri.parse(signedUrl),
+      headers: {'Content-Type': 'image/jpeg'},
+      body: imageBytes,
+    );
+    if (putRes.statusCode == 200 || putRes.statusCode == 204) {
+      return {'success': true};
+    }
+    return {'success': false, 'error': 'Failed to upload image'};
+  }
+
+  static Future<Map<String, dynamic>> removeBusinessImage(String businessName, String key) async {
+    final headers = await _authHeaders();
+    final response = await http.delete(
+      Uri.parse('$baseUrl/removeUrl'),
+      headers: headers,
+      body: jsonEncode({'name': businessName, 'key': key}),
+    );
+    final data = jsonDecode(response.body);
+    if (response.statusCode == 200) return {'success': true};
+    return {'success': false, 'error': data['error'] ?? 'Failed to remove image'};
   }
 
   static Future<Map<String, dynamic>> deleteReview(String reviewId) async {
