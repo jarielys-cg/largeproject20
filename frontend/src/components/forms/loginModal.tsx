@@ -48,6 +48,12 @@ const LoginModal = ({ isOpen, onClose, defaultBusinessOwner = false, onBusinessS
       navigate('/dashboard')
     }
   } catch (err: any) {
+    if (err.response?.status === 403 && err.response?.data?.error === 'Account is not verified') {
+      onClose()
+      navigate('/verify-email-sent', { state: { email: form.email, source: 'login' } })
+      return
+    }
+
     toast.error(err.response?.data?.error || 'Incorrect email or password')
   } finally {
     setLoading(false)
