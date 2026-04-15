@@ -3,7 +3,7 @@ import crypto from "crypto";
 import sgMail from "@sendgrid/mail";
 import User from "../models/User.js";
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 // 1. SEND RESET EMAIL
 export const forgotPassword = async (req: Request, res: Response) => {
@@ -36,11 +36,11 @@ export const forgotPassword = async (req: Request, res: Response) => {
       `
     };
 
-    await sgMail.send(msg);
+   from: process.env.EMAIL_FROM as string,
 
     return res.status(200).json({ message: "Password reset email sent" });
   } catch (err) {
-    console.error("SENDGRID ERROR:", err.response?.body || err);
+    console.error("SENDGRID ERROR:", err);
     return res.status(500).json({ error: "Error sending reset email" });
   }
 };
@@ -63,8 +63,8 @@ export const resetPassword = async (req: Request, res: Response) => {
     }
 
     existingUser.password = password;
-    existingUser.resetPasswordToken = undefined;
-    existingUser.resetPasswordExpires = undefined;
+    existingUser.resetPasswordToken = null;
+    existingUser.resetPasswordExpires = null;
 
     const savedUser = await (existingUser as any).save();
 
