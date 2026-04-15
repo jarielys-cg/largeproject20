@@ -32,7 +32,6 @@ const _categories = [
   {'label': 'Beauty & Spas', 'icon': Icons.content_cut_outlined},
   {'label': 'Automotive', 'icon': Icons.directions_car_outlined},
   {'label': 'Home Services', 'icon': Icons.home_outlined},
-  {'label': 'More', 'icon': Icons.more_horiz},
 ];
 
 class HomeScreen extends StatefulWidget {
@@ -85,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _search(String query, {int page = 1}) async {
     setState(() { _loading = true; _searched = true; });
-    final result = await ApiService.searchBusinesses(query, page: page);
+    final result = await ApiService.searchBusinesses(query, location: _locationCtrl.text.trim(), page: page);
     if (!mounted) return;
     setState(() {
       _loading = false;

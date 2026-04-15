@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import 'home_screen.dart';
+import 'login_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -48,10 +48,28 @@ class _SignupScreenState extends State<SignupScreen> {
     if (!mounted) return;
     setState(() => _loading = false);
     if (result['success']) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-        (_) => false,
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => AlertDialog(
+          title: const Text('Verify Your Email'),
+          content: const Text('Account created! Please check your email and click the verification link before logging in.'),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  (_) => false,
+                );
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF26B5B), foregroundColor: Colors.white),
+              child: const Text('Go to Login'),
+            ),
+          ],
+        ),
       );
     } else {
       setState(() => _error = result['error']);
@@ -110,7 +128,12 @@ class _SignupScreenState extends State<SignupScreen> {
                 controller: _emailCtrl,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(labelText: 'Email', border: OutlineInputBorder(), prefixIcon: Icon(Icons.email_outlined)),
-                validator: (v) => v == null || v.isEmpty ? 'Enter your email' : null,
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Enter your email';
+                  final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+                  if (!emailRegex.hasMatch(v.trim())) return 'Enter a valid email address';
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
               TextFormField(

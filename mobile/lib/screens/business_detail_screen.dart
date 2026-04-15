@@ -191,7 +191,7 @@ class _BusinessDetailScreenState extends State<BusinessDetailScreen> {
                 children: [
                   const Text('Reviews', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const Spacer(),
-                  if (_user != null)
+                  if (_user != null && !_user!.isBusinessOwner)
                     TextButton.icon(
                       icon: const Icon(Icons.rate_review_outlined),
                       label: const Text('Write Review'),

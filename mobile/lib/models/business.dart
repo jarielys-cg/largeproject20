@@ -38,7 +38,10 @@ class Business {
       ownerId: json['ownerId'] ?? '',
       category: List<String>.from(json['category'] ?? []),
       description: json['description'],
-      image: List<String>.from(json['image'] ?? []),
+      image: List<String>.from((json['image'] ?? []).map((img) {
+        final s = img as String;
+        return s.startsWith('http') ? s : 'https://marketplacegroup20.sfo3.digitaloceanspaces.com/$s';
+      })),
       address: json['address'],
       city: json['city'],
       state: json['state'],
