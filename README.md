@@ -127,6 +127,11 @@ This project used AI tools to assist with development and debugging throughout t
 - **Use**: Help with debugging and implementation in the mobile application
 
 
+- **Tool**: Claude (Anthropic)
+- **Dates**: April 13, 2026-April 15, 2026
+- **Scope**: Creating class diagram for mobile application
+- **Use**: Assistance with creating class diagram for mobile application
+
 
 **GitHub Copilot** was used during development for code suggestions, autocompletion, and identifying potential bugs inline while writing code in the editor.
 
