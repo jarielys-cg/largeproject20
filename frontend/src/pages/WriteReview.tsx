@@ -20,21 +20,22 @@ const WriteReview = ({ onLoginClick }: WriteReviewProps) => {
   const navigate = useNavigate()
 
   const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setSearched(true)
-    try {
-      const res = await api.post('/search', {
-        search: search,  
-        page: 1
-      })
-      setResults(res.data.data ?? [])
-    } catch {
-      setResults([])
-    } finally {
-      setLoading(false)
-    }
+  e.preventDefault()
+  setLoading(true)
+  setSearched(true)
+  try {
+    const res = await api.post('/search', {
+      search: search.trim(),      // name or category
+      location: location.trim(),  // city, state, or zipcode
+      page: 1
+    })
+    setResults(res.data.data ?? [])
+  } catch {
+    setResults([])
+  } finally {
+    setLoading(false)
   }
+}
 
   return (
     <div className="min-h-screen bg-white">
@@ -96,7 +97,13 @@ const WriteReview = ({ onLoginClick }: WriteReviewProps) => {
                 // Results
                 <div>
                   <h2 className="text-lg font-bold text-gray-900 mb-4">
-                    Results for "{search}"
+                    {search && location
+                      ? `Results for "${search}" in ${location}`
+                      : search
+                      ? `Results for "${search}"`
+                      : location
+                      ? `Results in "${location}"`
+                      : 'All businesses'}
                   </h2>
                   <div className="space-y-3">
                     {results.map(biz => (
@@ -123,6 +130,8 @@ const WriteReview = ({ onLoginClick }: WriteReviewProps) => {
                             <p className="text-sm text-gray-500">
                               {Array.isArray(biz.category) ? biz.category[0] : biz.category}
                               {biz.city ? ` · ${biz.city}` : ''}
+                              {biz.state ? `, ${biz.state}` : ''}
+                              {biz.zipCode ? ` ${biz.zipCode}` : ''}
                             </p>
                           </div>
                         </div>
@@ -143,9 +152,14 @@ const WriteReview = ({ onLoginClick }: WriteReviewProps) => {
                   <img src={feedbackIllustration} alt="No results" className="w-48 mb-4" />
                   <h2 className="text-lg font-bold text-gray-900 mb-2">No results found</h2>
                   <p className="text-gray-400 text-sm max-w-xs">
-                    We couldn't find any businesses matching "{search}". Try a different search.
+                    {search && location
+                      ? `We couldn't find any businesses matching "${search}" in "${location}".`
+                      : search
+                      ? `We couldn't find any businesses matching "${search}".`
+                      : `We couldn't find any businesses in "${location}".`
+                    } Try a different search.
                   </p>
-                </div>
+                </div>    
               )}
             </div>
           </div>

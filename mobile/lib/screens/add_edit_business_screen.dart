@@ -56,6 +56,7 @@ class _AddEditBusinessScreenState extends State<AddEditBusinessScreen> {
   List<String> _images = [];
   bool _loading = false;
   bool _uploadingImage = false;
+  bool _pickingImage = false;
   String? _error;
 
   bool get _isEditing => widget.business != null;
@@ -90,8 +91,11 @@ class _AddEditBusinessScreenState extends State<AddEditBusinessScreen> {
   }
 
   Future<void> _pickAndUploadImage() async {
+    if (_pickingImage || _uploadingImage) return;
+    setState(() => _pickingImage = true);
     final picker = ImagePicker();
     final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    setState(() => _pickingImage = false);
     if (picked == null || !mounted) return;
     setState(() => _uploadingImage = true);
     final result = await ApiService.uploadBusinessImage(_nameCtrl.text.trim(), File(picked.path));
@@ -275,8 +279,8 @@ class _AddEditBusinessScreenState extends State<AddEditBusinessScreen> {
                   ),
                 const SizedBox(height: 8),
                 OutlinedButton.icon(
-                  onPressed: _uploadingImage ? null : _pickAndUploadImage,
-                  icon: _uploadingImage
+                  onPressed: (_pickingImage || _uploadingImage) ? null : _pickAndUploadImage,
+                  icon: (_pickingImage || _uploadingImage)
                       ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                       : const Icon(Icons.add_photo_alternate_outlined),
                   label: Text(_uploadingImage ? 'Uploading...' : 'Add Photo'),
