@@ -1,0 +1,739 @@
+swagger: '2.0'
+info:
+  title: Bizmart
+  version: 1.0.0
+  description: API documentation for a Marketplace App to find Businesses
+
+  contact:
+    name: Group 20 API Team
+  x-team-contacts:
+    - name: Wesley Wild
+    - name: Ruben Bernard
+    - name: Jarielys Cruz Gomez
+
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+paths:
+  /login:
+    post:
+      tags: 
+        - Users
+      summary: Logs in
+      operationId: login
+      description: Logs existing user to the marketplace app
+      consumes: 
+        - application/json
+      produces: 
+        - application/json
+      parameters:
+        - in: body
+          name: loginItem
+          schema:
+            $ref: '#/definitions/login'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+        500:
+          description: Server Error
+
+  /signUp:
+    post:
+      tags: 
+        - Users
+      summary: Creates account
+      operationId: signUp
+      description: Creates an account for new Users in the marketplace app
+      consumes: 
+        - application/json
+      produces: 
+        - application/json
+      parameters:
+        - in: body
+          name: signupItem
+          schema:
+            $ref: '#/definitions/signUp'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+        500:
+          description: Server Error
+
+  /addB:
+    post:
+      tags: 
+        - Add
+      security:
+        - bearerAuth: []
+      summary: Adds a business page
+      operationId: addBusiness
+      description: Adds a new business to database
+      consumes: 
+        - application/json
+      produces: 
+        - application/json
+      parameters:
+        - in: body
+          name: addItem
+          schema:
+            $ref: '#/definitions/addBusiness'
+      responses:
+        200:
+          description: OK
+        401:
+          description: No/Invalid Token
+        403:
+          description: Expired Token
+        404:
+          description: URL Not Found
+        500:
+          description: Server Error
+
+  /editB:
+    patch:
+      tags: 
+        - Edit
+      security:
+        - bearerAuth: []
+      summary: Edits a business page
+      operationId: editBusiness
+      consumes: 
+        - application/json
+      produces: 
+        - application/json
+      parameters:
+        - in: body
+          name: editItem
+          schema:
+            $ref: '#/definitions/editBusiness'
+      responses:
+        200:
+          description: OK
+        401:
+          description: No/Invalid Token
+        403:
+          description: Expired Token
+        404:
+          description: URL Not Found
+        500:
+          description: Server Error
+
+  /removeB:
+    delete:
+      tags: 
+        - Delete
+      security:
+        - bearerAuth: []
+      summary: Deletes a business page
+      operationId: removeBusiness
+      consumes: 
+        - application/json
+      produces: 
+        - application/json
+      parameters:
+        - in: body
+          name: deleteItem
+          schema:
+            $ref: '#/definitions/removeBusiness'
+      responses:
+        200:
+          description: OK
+        401:
+          description: No/Invalid Token
+        403:
+          description: Expired Token
+        404:
+          description: URL Not Found
+        500:
+          description: Server Error
+
+  /getUploadUrl:
+    post:
+      tags: 
+        - Add
+      security:
+        - bearerAuth: []
+      summary: Uploads an image url
+      operationId: getUploadUrl
+      consumes: 
+        - application/json
+      produces: 
+        - application/json
+      parameters:
+        - in: body
+          name: uploadUrlItem
+          schema:
+            $ref: '#/definitions/getUploadUrl'
+      responses:
+        200:
+          description: OK
+        401:
+          description: No/Invalid Token
+        403:
+          description: Expired Token
+        404:
+          description: URL Not Found
+        500:
+          description: Server Error
+
+  /removeUrl:
+    delete:
+      tags: 
+        - Delete
+      security:
+        - bearerAuth: []
+      summary: Deletes an image url
+      operationId: removeUrl
+      consumes: 
+        - application/json
+      produces: 
+        - application/json
+      parameters:
+        - in: body
+          name: removeUrlItem
+          schema:
+            $ref: '#/definitions/removeUrl'
+      responses:
+        200:
+          description: OK
+        401:
+          description: No/Invalid Token
+        403:
+          description: Expired Token
+        404:
+          description: URL Not Found
+        500:
+          description: Server Error
+
+  /search:
+    post:
+      tags: 
+        - Search
+      summary: Find businesses
+      operationId: search
+      consumes: 
+        - application/json
+      produces: 
+        - application/json
+      parameters:
+        - in: body
+          name: searchItem
+          schema:
+            $ref: '#/definitions/search'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+        500:
+          description: Server Error
+
+  /reviews:
+    post:
+      tags: 
+        - Add
+      security:
+        - bearerAuth: []
+      summary: Adds a new review
+      operationId: addReview
+      consumes: 
+        - application/json
+      produces: 
+        - application/json
+      parameters:
+        - in: body
+          name: addReviewItem
+          schema:
+            $ref: '#/definitions/addReview'
+      responses:
+        200:
+          description: OK
+        401:
+          description: No/Invalid Token
+        403:
+          description: Expired Token
+        500:
+          description: Server Error
+
+  /reviews/{id}:
+    put:
+      tags: 
+        - Edit
+      security:
+        - bearerAuth: []
+      summary: Edits review
+      operationId: editReview
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+        - in: body
+          name: editReviewItem
+          schema:
+            $ref: '#/definitions/editReview'
+      responses:
+        200:
+          description: OK
+        401:
+          description: No/Invalid Token
+        403:
+          description: Expired Token
+        404:
+          description: URL Not Found
+        500:
+          description: Server Error
+
+    delete:
+      tags: 
+        - Delete
+      security:
+        - bearerAuth: []
+      summary: Removes review
+      operationId: removeReview
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+        401:
+          description: No/Invalid Token
+        403:
+          description: Expired Token
+        404:
+          description: URL Not Found
+        500:
+          description: Server Error
+
+  /forgotPassword:
+    post:
+      tags: 
+        - Users
+      summary: Sends token to email to reset password
+      operationId: forgotPassword
+      consumes: 
+        - application/json
+      produces: 
+        - application/json
+      parameters:
+        - in: body
+          name: forgotPasswordItem
+          schema:
+            $ref: '#/definitions/forgotPassword'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+        500:
+          description: Server Error
+
+  /resetPassword/{token}:
+    patch:
+      tags: 
+        - Users
+      summary: Resets user password
+      operationId: resetPassword
+      consumes: 
+        - application/json
+      produces: 
+        - application/json
+      parameters:
+        - in: path
+          name: token
+          required: true
+          type: string
+        - in: body
+          name: passwordResetItem
+          schema:
+            $ref: '#/definitions/resetPassword'
+      responses:
+        200:
+          description: OK
+        404:
+          description: URL Not Found
+        500:
+          description: Server Error
+
+  /auth/me:
+    get:
+      tags: 
+        - Users
+      summary: Find if user is authenticated
+      operationId: authenticateUser
+      security:
+        - bearerAuth: []
+      produces: 
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/User'
+        401:
+          description: No/Invalid Token
+        403:
+          description: Expired Token
+        500:
+          description: Server Error
+
+definitions:
+  login:
+    type: object
+    required:
+      - email
+      - password
+    properties:
+      email:
+        type: string
+        example: "john@example.com"
+      password:
+        type: string
+        example: "password123"
+
+  signUp:
+    type: object
+    required:
+      - firstName
+      - lastName
+      - username
+      - email
+      - password
+      - isBusinessOwner
+      - zipCode
+    properties:
+      firstName:
+        type: string
+        example: "New"
+      lastName:
+        type: string
+        example: "Account"
+      username:
+        type: string
+        example: "newaccount"
+      email:
+        type: string
+        example: "newaccount@gmail.com"
+      password:
+        type: string
+        example: "password12345"
+      isBusinessOwner:
+        type: boolean
+        example: false
+      zipCode: 
+        type: integer
+        example: 12345
+
+  addBusiness:
+    type: object
+    required:
+      - name
+      - category
+      - description
+      - address
+      - city
+      - state
+      - zipCode
+      - phone
+      - websiteLink
+    properties:
+      name:
+        type: string
+        example: "John's Bakery"
+      category:
+        oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+        example: "Restaurants"
+      description:
+        type: string
+        example: "We have all sort of bakes good!"
+      address:
+        type: string
+        example: "123 Bakery St Orlando, FL, 12345"
+      city:
+        type: string
+        example: "Orlando"
+      state:
+        type: string
+        example: "FL"
+      zipCode:
+        type: integer
+        example: 12345
+      phone:
+        type: string
+        example: "(111) 111-1111"
+      websiteLink:
+        type: string
+        example: "https://johnsbakery.com"
+
+  editBusiness:
+    type: object
+    required:
+      - name
+      - newName
+      - category
+      - description
+      - address
+      - city
+      - state
+      - zipCode
+      - phone
+      - websiteLink
+    properties:
+      name:
+        type: string
+        example: "John's Restaurant"
+      newName:
+        type: string
+        example: "John's Steakhouse"
+      category:
+        oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+        example: "Restaurant"
+      description:
+        type: string
+        example: "Amazing food here!"
+      address:
+        type: string
+        example: "123 Steakhouse St Orlando, FL, 12345"
+      city:
+        type: string
+        example: "Orlando"
+      state:
+        type: string
+        example: "FL"
+      zipCode:
+        type: integer
+        example: 12345
+      phone:
+        type: string
+        example: "(111) 111-1111"
+      websiteLink:
+        type: string
+        example: "https://johnsteakhouse.com"
+
+  removeBusiness:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        example: "John's Test Business"
+
+  getUploadUrl:
+    type: object
+    required:
+      - name
+      - fileType
+    properties:
+      name:
+        type: string
+        example: ""
+      fileType:
+        oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+        example: ["", ""]
+
+  removeUrl:
+    type: object
+    required:
+      - name
+      - key
+    properties:
+      name:
+        type: string
+        example: ""
+      key:
+        type: string
+        example: ""
+
+  search:
+    type: object
+    required:
+      - search
+      - location
+    properties:
+      search:
+        type: string
+        example: "John"
+      location:
+        type: string
+        example: "Orlando"
+
+  addReview:
+    type: object
+    required:
+      - businessId
+      - rating
+      - review
+    properties:
+      businessId:
+        type: string
+        example: "69b1f12a20fa0fb3618563b5"
+      rating:
+        type: integer
+        example: 5
+      review:
+        type: string
+        example: "1000% the best electronics store!"
+
+  editReview:
+    type: object
+    required:
+      - review
+      - rating
+    properties:
+      review:
+        type: string
+        example: ""
+      rating:
+        type: integer
+        example:
+
+  forgotPassword:
+    type: object
+    required: 
+      - email
+    properties:
+      email:
+        type: string
+        example: ""
+
+  resetPassword:
+    type: object
+    required: 
+      - password
+    properties:
+      password:
+        type: string
+        example: ""
+
+  User:
+    type: object
+    required:
+      - firstName
+      - lastName
+      - username
+      - email
+      - password
+    properties:
+      _id:
+        type: string 
+        example: ""
+      firstName:
+        type: string
+        example: ""
+      lastName: 
+        type: string
+        example: ""
+      username: 
+        type: string
+        example: ""
+      email:
+        type: string
+        example: ""
+      isBusinessOwner: 
+        type: boolean 
+        example: ""
+      zipCode: 
+        type: integer
+        example: ""
+      isVerified:
+        type: boolean
+        example: ""
+      createdAt:
+        type: string
+        format: date-time
+        example: ""
+      updatedAt:
+        type: string
+        format: date-time
+        example: ""
+
+  Business:
+    type: object
+    required:
+      - name
+      - ownerId
+      - category
+    properties:
+      name:
+        type: string 
+      ownerId:
+        type: string
+      category: 
+        oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+      description: 
+        type: string
+      image:
+        oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+      address: 
+        type: string 
+      city: 
+        type: string
+      state:
+        type: string
+      zipCode:
+        type: integer
+      phone: 
+        type: string 
+      websiteLink: 
+        type: string
+      reviewCount:
+        type: integer
+      averageReviewScore:
+        type: number
+
+  Review:
+    type: object
+    required:
+      - businessId
+      - userId
+      - rating
+    properties:
+      businessId:
+        type: string
+      ownerId:
+        type: string
+      rating:
+        type: integer
+      review:
+        type: string
+  
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: 'Enter value as: Bearer "<JWT>"'
+
+host: colors-lab-cop4331c.xyz
+basePath: /api
+schemes:
+- http
