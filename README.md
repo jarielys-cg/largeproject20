@@ -121,8 +121,12 @@ The app is hosted on DigitalOcean at [http://colors-lab-cop4331c.xyz](http://col
 ## AI Usage
 
 This project used AI tools to assist with development and debugging throughout the build process.
+- **Tool**: Claude (Anthropic)
+- **Dates**: April 15, 2026
+- **Scope**: Updating and debugging email verification feature in the mobile application
+- **Use**: Help with debugging and implementation in the mobile application
 
-**Claude (Anthropic)** was used to help debug mobile development. 
+
 
 **GitHub Copilot** was used during development for code suggestions, autocompletion, and identifying potential bugs inline while writing code in the editor.
 
