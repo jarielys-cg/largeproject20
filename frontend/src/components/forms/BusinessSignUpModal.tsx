@@ -2,6 +2,7 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import api from "../../lib/axios"
 import type { BusinessForm, BusinessSignUpModalProps } from "../../types"
+import { useNavigate } from 'react-router'
 
 
 const CATEGORIES = [
@@ -13,6 +14,7 @@ const CATEGORIES = [
 ]
 
 const BusinessSignUpModal = ({ isOpen, onClose, skipAccountStep = false, onSuccess }: BusinessSignUpModalProps) => {
+  const navigate = useNavigate()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState<BusinessForm>({
@@ -50,6 +52,8 @@ const BusinessSignUpModal = ({ isOpen, onClose, skipAccountStep = false, onSucce
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault()
 
+  if (loading) return
+
   const ownerNameParts = form.ownerName.trim().split(/\s+/).filter(Boolean)
   if (!skipAccountStep && ownerNameParts.length < 2) {
     toast.error('Please enter your full name (first and last name)')
@@ -60,7 +64,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   try {
     if (!skipAccountStep) {
       //create the user account (new business owner signing up)
-      await api.post('/signup', {
+      const signupRes = await api.post('/signup', {
         firstName: ownerNameParts[0],
         lastName: ownerNameParts.slice(1).join(' '),
         email: form.email,
@@ -70,15 +74,15 @@ const handleSubmit = async (e: React.FormEvent) => {
         isBusinessOwner: true
       })
 
-      // login to get the token
-      const loginRes = await api.post('/login', {
-        email: form.email,
-        password: form.password
-      })
-      localStorage.setItem('token', loginRes.data.token)
+      const token = signupRes.data.token
+      const user = signupRes.data.savedUser ?? signupRes.data.user
+      localStorage.setItem('token', token)
+      if (user) {
+        localStorage.setItem('user', JSON.stringify(user))
+      }
 
       //add the business using the new token
-      const payload = JSON.parse(atob(loginRes.data.token.split('.')[1]))
+      const payload = JSON.parse(atob(token.split('.')[1]))
      await api.post('/addB', {
       name: form.businessName,
       ownerId: payload.userId,
@@ -95,7 +99,10 @@ const handleSubmit = async (e: React.FormEvent) => {
       toast.success(`Welcome! ${form.businessName} has been registered!`)
       onClose()
       resetForm()
-      window.location.href = '/business/dashboard'
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      window.dispatchEvent(new Event('auth-changed'))
+      navigate('/verify-email-sent', { state: { email: form.email, source: 'signup' } })
 
     } else {
       // Already logged in just add the business
