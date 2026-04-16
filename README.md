@@ -140,6 +140,11 @@ This project used AI tools to assist with development and debugging throughout t
 - **Scope**: Implementation of buttons to edit and delete reviews
 - **Use**: Help with logic for when buttons should appear and their functions
 
+- **Tool**: ChatGPT 5.2 (chatgpt.com)
+- **Dates**: March 25 to April 15, 2026
+- **Scope**: MERN stack and typescript, jwt, image uploading, api
+- **Use**: Help with getting stack setup, learning and using typescript, and using other libraries such as jwt and aws. General debugging, code generation, and endpoint explanation for api
+
 All AI-generated code was reviewed, tested, and modified to meet
 assignment requirements. Final implementation reflects my understanding
 of the concepts.
