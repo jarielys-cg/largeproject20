@@ -19,7 +19,7 @@ const ResetPassword = () => {
     }
     setLoading(true)
     try {
-      await api.post(`/resetPassword/${token}`, { password })
+      await api.patch(`/resetPassword/${token}`, { password })
       toast.success('Password reset successfully!')
       navigate('/')
     } catch (err: any) {
