@@ -14,6 +14,7 @@ import SignUpChoiceModal from "./components/forms/SignUpModalChoice"
 import BusinessReviews from "./pages/BusinessReviews"
 import BusinessPage from "./pages/BusinessPage"
 import UserDashboard from "./pages/userDashboard"
+import ResetPassword from "./pages/ResetPassword"
 
 function SearchRedirect() {
   const location = useLocation()
@@ -74,6 +75,7 @@ function App() {
         <Route path="/business/:businessId" element={<BusinessPage onLoginClick={() => setLoginModalOpen(true)} />} />
         <Route path="/search" element={<SearchRedirect />} />
         <Route path="/dashboard" element={<UserDashboard onLoginClick={() => setLoginModalOpen(true)} />} />
+        <Route path="/resetPassword/:token" element={<ResetPassword />} />
       </Routes>
 
      
