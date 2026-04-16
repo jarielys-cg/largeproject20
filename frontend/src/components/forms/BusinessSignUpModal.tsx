@@ -19,7 +19,7 @@ const BusinessSignUpModal = ({ isOpen, onClose, skipAccountStep = false, onSucce
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState<BusinessForm>({
     businessName: '', category: '', phone: '',
-    address: '', city: '', zipCode: '',
+    address: '', state: '', city: '', zipCode: '',
     ownerName: '', email: '', password: ''
   })
 
@@ -44,7 +44,7 @@ const BusinessSignUpModal = ({ isOpen, onClose, skipAccountStep = false, onSucce
   setStep(1)
   setForm({
     businessName: '', category: '', phone: '',
-    address: '', city: '', zipCode: '',
+    address: '', state: '', city: '', zipCode: '',
     ownerName: '', email: '', password: ''
   })
 }
@@ -89,7 +89,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       category: form.category,
       address: form.address,
       city: form.city,
-      state: '',        
+      state: form.state,
       zipCode: form.zipCode,
       phone: form.phone,
       description: '',
@@ -114,7 +114,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         category: form.category,
         address: form.address,
         city: form.city,
-        state: '',
+        state: form.state,
         zipCode: form.zipCode,
         phone: form.phone,
         description: '',
@@ -237,6 +237,16 @@ const handleSubmit = async (e: React.FormEvent) => {
                   onChange={handleChange} placeholder="Orlando"
                   pattern="[A-Za-z\s]+"
                   title="City can only contain letters"
+                  className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-bm-coral bg-white"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 uppercase tracking-wide mb-1">State</label>
+                <input
+                  name="state" type="text" required value={form.state}
+                  onChange={handleChange} placeholder="FL"
+                  pattern="[A-Za-z\s]+"
+                  title="State can only contain letters"
                   className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-bm-coral bg-white"
                 />
               </div>

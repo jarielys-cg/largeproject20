@@ -30,6 +30,7 @@ export interface BusinessForm {
   // Step 2
   address: string
   city: string
+  state: string
   zipCode: string
   // Step 3
   ownerName: string
