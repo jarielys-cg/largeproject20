@@ -28,7 +28,25 @@ router.get("/businesses/mine", async (req, res) => {
     
     const payload = jwt.verify(token, process.env.JWT_SECRET!) as any
     const businesses = await Business.find({ ownerId: payload.userId })
-    res.json(await Promise.all(businesses.map((business) => mapBusinessImageUrls(business))))
+    const mappedBusinesses = await Promise.all(
+      businesses.map((business) => mapBusinessImageUrls(business))
+    )
+
+    const seenIds = new Set<string>()
+    const dedupedBusinesses = mappedBusinesses.filter((business) => {
+      const id = String((business as any)?._id ?? '')
+      if (!id || seenIds.has(id)) return false
+      seenIds.add(id)
+      return true
+    })
+
+    if (dedupedBusinesses.length !== mappedBusinesses.length) {
+      console.warn(
+        `businesses/mine deduplicated ${mappedBusinesses.length - dedupedBusinesses.length} duplicate entries`
+      )
+    }
+
+    res.json(dedupedBusinesses)
   } catch {
     res.status(401).json({ error: 'Unauthorized' })
   }

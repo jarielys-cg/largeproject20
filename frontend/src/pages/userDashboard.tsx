@@ -11,6 +11,19 @@ interface DashboardPageProps {
   onLoginClick?: () => void;
 }
 
+const dedupeBusinessesById = (items: Business[]): Business[] => {
+  const seenIds = new Set<string>();
+
+  return items.filter((business) => {
+    if (!business?._id || seenIds.has(business._id)) {
+      return false;
+    }
+
+    seenIds.add(business._id);
+    return true;
+  });
+};
+
 const DashboardPage = ({ onLoginClick }: DashboardPageProps) => {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +50,11 @@ const DashboardPage = ({ onLoginClick }: DashboardPageProps) => {
       setLoading(true);
       try {
         const results = await fetchBusinesses(searchTerm, locationTerm, page);
-        setBusinesses(results.businesses);
+        const uniqueBusinesses = dedupeBusinessesById(results.businesses);
+        if (uniqueBusinesses.length !== results.businesses.length) {
+          console.warn("Duplicate businesses returned from search API; deduplicating by _id.");
+        }
+        setBusinesses(uniqueBusinesses);
         setTotalPages(results.totalPages);
         setSelectedBusiness(null);
         setBusinessModalOpen(false);

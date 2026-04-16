@@ -123,15 +123,33 @@ export const searchBusiness = async(req: Request, res: Response) => {
         const[businesses, total] = await Promise.all ([
             Business
                 .find(combinedResult)
-                .sort({ averageReviewScore: -1 })
+                .sort({ averageReviewScore: -1, _id: 1 })
                 .skip(skip)
                 .limit(pageSize),
 
             Business.countDocuments(combinedResult)
         ]);
 
+        const mappedBusinesses = await Promise.all(
+            businesses.map((business) => mapBusinessImageUrls(business))
+        );
+
+        const seenIds = new Set<string>();
+        const dedupedBusinesses = mappedBusinesses.filter((business) => {
+            const id = String((business as any)?._id ?? "");
+            if (!id || seenIds.has(id)) return false;
+            seenIds.add(id);
+            return true;
+        });
+
+        if (dedupedBusinesses.length !== mappedBusinesses.length) {
+            console.warn(
+                `searchBusiness deduplicated ${mappedBusinesses.length - dedupedBusinesses.length} duplicate entries`
+            );
+        }
+
         res.json({
-            data: await Promise.all(businesses.map((business) => mapBusinessImageUrls(business))),
+            data: dedupedBusinesses,
             page,
             totalPages: Math.ceil(total / pageSize),
             total
