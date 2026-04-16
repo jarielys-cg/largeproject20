@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import 'login_screen.dart';
+import 'email_verification_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -49,27 +49,12 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() => _loading = false);
     if (result['success']) {
       if (!mounted) return;
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => AlertDialog(
-          title: const Text('Verify Your Email'),
-          content: const Text('Account created! Please check your email and click the verification link before logging in.'),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  (_) => false,
-                );
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF26B5B), foregroundColor: Colors.white),
-              child: const Text('Go to Login'),
-            ),
-          ],
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (_) => EmailVerificationScreen(email: _emailCtrl.text.trim()),
         ),
+        (_) => false,
       );
     } else {
       setState(() => _error = result['error']);
