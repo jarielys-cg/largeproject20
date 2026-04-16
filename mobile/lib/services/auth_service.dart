@@ -68,6 +68,27 @@ class AuthService {
     }
   }
 
+  static Future<Map<String, dynamic>> resendVerificationEmail(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/resend-email'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      ).timeout(const Duration(seconds: 15));
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return {'success': true, 'retryAfterSeconds': data['retryAfterSeconds'] ?? 60};
+      }
+      return {
+        'success': false,
+        'error': data['error'] ?? 'Failed to resend email',
+        'retryAfterSeconds': data['retryAfterSeconds'],
+      };
+    } catch (_) {
+      return {'success': false, 'error': 'Could not connect to server'};
+    }
+  }
+
   static Future<Map<String, dynamic>> signUp({
     required String firstName,
     required String lastName,
