@@ -54,7 +54,7 @@ const LoginModal = ({ isOpen, onClose, defaultBusinessOwner = false, onBusinessS
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 flex items-center justify-center [z-100]"
+      className="fixed inset-0 bg-black/60 flex items-center justify-center [z-200]"
       onClick={onClose}
     >
       <div

@@ -67,7 +67,7 @@ function Landing({ onLoginClick}: LandingProps) {
       <Navbar onLoginClick={onLoginClick} />
 
       {/* Hero section */}
-      <div className="relative w-full h-130 overflow-hidden">
+      <div className="relative w-full h-130 overflow-hidden z-0">
 
         {/* Sliding images */}
         {HERO_IMAGES.map((img, i) => (
@@ -87,7 +87,7 @@ function Landing({ onLoginClick}: LandingProps) {
         ))}
 
         {/* Hero content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 z-10">
           <div className="w-full max-w-3xl">
 
             {/* Animated label */}
