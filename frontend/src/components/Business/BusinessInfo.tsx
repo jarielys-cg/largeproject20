@@ -3,27 +3,51 @@ import { MapPin, Phone, Globe, Pencil, Plus } from 'lucide-react'
 
 interface Props {
   address?: string
+  city?: string
+  state?: string
+  zipCode?: string
   phone?: string
   websiteLink?: string
   onSaveWebsite: (url: string) => void
   onSavePhone: (phone: string) => void
-  onSaveAddress: (address: string) => void
+  onSaveAddress: (location: { address: string; city: string; state: string; zipCode: string }) => Promise<void> | void
 }
 
-const BusinessInfo = ({ address, phone, websiteLink, onSaveWebsite, onSavePhone, onSaveAddress }: Props) => {
+const BusinessInfo = ({
+  address,
+  city,
+  state,
+  zipCode,
+  phone,
+  websiteLink,
+  onSaveWebsite,
+  onSavePhone,
+  onSaveAddress,
+}: Props) => {
   const [editingWebsite, setEditingWebsite] = useState(false)
   const [editingPhone, setEditingPhone] = useState(false)
   const [editingAddress, setEditingAddress] = useState(false)
+  const [savingLocation, setSavingLocation] = useState(false)
+  const [zipError, setZipError] = useState('')
+  const [phoneError, setPhoneError] = useState('')
   const [tempWebsite, setTempWebsite] = useState(websiteLink ?? '')
   const [tempPhone, setTempPhone] = useState(phone ?? '')
   const [tempAddress, setTempAddress] = useState(address ?? '')
+  const [tempCity, setTempCity] = useState(city ?? '')
+  const [tempState, setTempState] = useState(state ?? '')
+  const [tempZipCode, setTempZipCode] = useState(String(zipCode ?? ''))
 
   // sync temp values when active business changes
   useEffect(() => {
     setTempWebsite(websiteLink ?? '')
     setTempPhone(phone ?? '')
     setTempAddress(address ?? '')
-  }, [address, phone, websiteLink])
+    setTempCity(city ?? '')
+    setTempState(state ?? '')
+    setTempZipCode(String(zipCode ?? ''))
+    setZipError('')
+    setPhoneError('')
+  }, [address, city, phone, state, websiteLink, zipCode])
 
 
   return (
@@ -42,13 +66,25 @@ const BusinessInfo = ({ address, phone, websiteLink, onSaveWebsite, onSavePhone,
                   <p className="text-sm font-semibold text-gray-900 mb-0.5">Address</p>
                   {address ? (
                     <p className="text-sm text-gray-500">{address}</p>
-                    ) : (
+                  ) : (
                     <p className="text-sm text-bm-coral">Add your address</p>
-                    )}
+                  )}
+                  {(city || state || zipCode) && (
+                    <p className="mt-1 text-sm text-gray-500">
+                      {[city, state, zipCode].filter(Boolean).join(', ')}
+                    </p>
+                  )}
                 </div>
               </div>
               <button
-                onClick={() => { setTempAddress(address ?? ''); setEditingAddress(true) }}
+                type="button"
+                onClick={() => {
+                  setTempAddress(address ?? '')
+                  setTempCity(city ?? '')
+                  setTempState(state ?? '')
+                  setTempZipCode(String(zipCode ?? ''))
+                  setEditingAddress(true)
+                }}
                 className="text-gray-400 hover:text-bm-coral transition-colors shrink-0"
               >
                 <Pencil size={14} />
@@ -59,18 +95,69 @@ const BusinessInfo = ({ address, phone, websiteLink, onSaveWebsite, onSavePhone,
                 <input
                   value={tempAddress}
                   onChange={e => setTempAddress(e.target.value)}
-                  placeholder="123 Main St, Orlando, FL"
+                  placeholder="123 Main St"
                   className="w-full border border-bm-coral rounded-lg px-3 py-1.5 text-sm focus:outline-none"
                   autoFocus
                 />
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                  <input
+                    value={tempCity}
+                    onChange={e => setTempCity(e.target.value)}
+                    placeholder="City"
+                    className="w-full border border-bm-coral rounded-lg px-3 py-1.5 text-sm focus:outline-none"
+                  />
+                  <input
+                    value={tempState}
+                    onChange={e => setTempState(e.target.value)}
+                    placeholder="State"
+                    className="w-full border border-bm-coral rounded-lg px-3 py-1.5 text-sm focus:outline-none"
+                  />
+                  <input
+                    value={tempZipCode}
+                    onChange={e => {
+                      const nextValue = e.target.value
+                      setTempZipCode(nextValue)
+                      if (nextValue.replace(/\D/g, '').length > 5) {
+                        setZipError('ZIP code cannot be longer than 5 digits.')
+                      } else {
+                        setZipError('')
+                      }
+                    }}
+                    placeholder="ZIP code"
+                    inputMode="numeric"
+                    className="w-full border border-bm-coral rounded-lg px-3 py-1.5 text-sm focus:outline-none"
+                  />
+                </div>
+                {zipError && <p className="text-xs font-medium text-red-600">{zipError}</p>}
                 <div className="flex gap-2">
                   <button
-                    onClick={() => { onSaveAddress(tempAddress); setEditingAddress(false) }}
-                    className="flex-1 bg-bm-coral text-white text-xs px-3 py-1.5 rounded-lg hover:bg-bm-coral-dark transition-colors"
+                    type="button"
+                    onClick={async () => {
+                      if (tempZipCode.replace(/\D/g, '').length > 5) {
+                        setZipError('ZIP code cannot be longer than 5 digits.')
+                        return
+                      }
+
+                      setSavingLocation(true)
+                      try {
+                        await onSaveAddress({
+                          address: tempAddress,
+                          city: tempCity.trim(),
+                          state: tempState.trim(),
+                          zipCode: String(tempZipCode).trim(),
+                        })
+                        setEditingAddress(false)
+                      } finally {
+                        setSavingLocation(false)
+                      }
+                    }}
+                    className="flex-1 bg-bm-coral text-white text-xs px-3 py-1.5 rounded-lg hover:bg-bm-coral-dark transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                    disabled={savingLocation || Boolean(zipError)}
                   >
-                    Save
+                    {savingLocation ? 'Saving...' : 'Save'}
                   </button>
                   <button
+                    type="button"
                     onClick={() => setEditingAddress(false)}
                     className="flex-1 border border-gray-200 text-gray-600 text-xs px-3 py-1.5 rounded-lg transition-colors"
                   >
@@ -96,6 +183,7 @@ const BusinessInfo = ({ address, phone, websiteLink, onSaveWebsite, onSavePhone,
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => { setTempPhone(phone ?? ''); setEditingPhone(true) }}
                 className="text-gray-400 hover:text-bm-coral transition-colors shrink-0"
               >
@@ -106,19 +194,39 @@ const BusinessInfo = ({ address, phone, websiteLink, onSaveWebsite, onSavePhone,
               <div className="mt-2 flex flex-col gap-2">
                 <input
                   value={tempPhone}
-                  onChange={e => setTempPhone(e.target.value)}
+                  onChange={e => {
+                    const nextValue = e.target.value
+                    setTempPhone(nextValue)
+                    if (nextValue.replace(/\D/g, '').length > 10) {
+                      setPhoneError('Phone number cannot be longer than 10 digits.')
+                    } else {
+                      setPhoneError('')
+                    }
+                  }}
                   placeholder="(407) 555-0100"
                   className="w-full border border-bm-coral rounded-lg px-3 py-1.5 text-sm focus:outline-none"
                   autoFocus
                 />
+                {phoneError && <p className="text-xs font-medium text-red-600">{phoneError}</p>}
                 <div className="flex gap-2">
                   <button
-                    onClick={() => { onSavePhone(tempPhone); setEditingPhone(false) }}
-                    className="flex-1 bg-bm-coral text-white text-xs px-3 py-1.5 rounded-lg hover:bg-bm-coral-dark transition-colors"
+                    type="button"
+                    onClick={() => {
+                      if (tempPhone.replace(/\D/g, '').length > 10) {
+                        setPhoneError('Phone number cannot be longer than 10 digits.')
+                        return
+                      }
+
+                      onSavePhone(tempPhone)
+                      setEditingPhone(false)
+                    }}
+                    className="flex-1 bg-bm-coral text-white text-xs px-3 py-1.5 rounded-lg hover:bg-bm-coral-dark transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                    disabled={Boolean(phoneError)}
                   >
                     Save
                   </button>
                   <button
+                    type="button"
                     onClick={() => setEditingPhone(false)}
                     className="flex-1 border border-gray-200 text-gray-600 text-xs px-3 py-1.5 rounded-lg transition-colors"
                   >
@@ -151,6 +259,7 @@ const BusinessInfo = ({ address, phone, websiteLink, onSaveWebsite, onSavePhone,
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => { setTempWebsite(websiteLink ?? ''); setEditingWebsite(true) }}
                 className="text-gray-400 hover:text-bm-coral transition-colors shrink-0"
               >
@@ -169,12 +278,14 @@ const BusinessInfo = ({ address, phone, websiteLink, onSaveWebsite, onSavePhone,
                 />
                 <div className="flex gap-2">
                   <button
+                    type="button"
                     onClick={() => { onSaveWebsite(tempWebsite); setEditingWebsite(false) }}
                     className="flex-1 bg-bm-coral text-white text-xs px-3 py-1.5 rounded-lg hover:bg-bm-coral-dark transition-colors"
                   >
                     Save
                   </button>
                   <button
+                    type="button"
                     onClick={() => setEditingWebsite(false)}
                     className="flex-1 border border-gray-200 text-gray-600 text-xs px-3 py-1.5 rounded-lg transition-colors"
                   >

@@ -281,7 +281,7 @@ const BusinessDashboard = () => {
     }
   }
 
-  const handleSaveAddress = async (address: string) => {
+  const handleSaveAddress = async (location: { address: string; city: string; state: string; zipCode: string }) => {
     if (!activeBusiness) return
     try {
       const token = localStorage.getItem('token')
@@ -289,13 +289,16 @@ const BusinessDashboard = () => {
       const res = await api.patch('/editB', {
         ownerId: payload.userId,
         name: activeBusiness.name,
-        address
+        address: location.address,
+        city: location.city,
+        state: location.state,
+        zipCode: location.zipCode,
       })
       setActiveBusiness(res.data)
       setBusinesses(prev => prev.map(b => b._id === res.data._id ? res.data : b))
-      toast.success('Address updated!')
+      toast.success('Location updated!')
     } catch {
-      toast.error('Failed to update address')
+      toast.error('Failed to update location')
     }
   }
 
@@ -467,6 +470,9 @@ const BusinessDashboard = () => {
 
         <BusinessInfo
           address={activeBusiness?.address}
+          city={activeBusiness?.city}
+          state={activeBusiness?.state}
+          zipCode={activeBusiness?.zipCode}
           phone={activeBusiness?.phone}
           websiteLink={activeBusiness?.websiteLink}
           onSaveWebsite={handleSaveWebsite}
