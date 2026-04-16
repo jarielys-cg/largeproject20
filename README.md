@@ -121,6 +121,10 @@ The app is hosted on DigitalOcean at [http://colors-lab-cop4331c.xyz](http://col
 ## AI Usage
 
 This project used AI tools to assist with development and debugging throughout the build process.
+
+**GitHub Copilot** was used during development for code suggestions, autocompletion, and identifying potential bugs inline while writing code in the editor.
+
+
 - **Tool**: Claude (Anthropic)
 - **Dates**: April 15, 2026
 - **Scope**: Updating and debugging email verification feature in the mobile application
@@ -133,17 +137,17 @@ This project used AI tools to assist with development and debugging throughout t
 - **Use**: Assistance with creating class diagram for mobile application
 
 
-**GitHub Copilot** was used during development for code suggestions, autocompletion, and identifying potential bugs inline while writing code in the editor.
-
 - **Tool**: ChatGPT 5.2 (chatgpt.com)
 - **Dates**: April 15, 2026
 - **Scope**: Implementation of buttons to edit and delete reviews
 - **Use**: Help with logic for when buttons should appear and their functions
 
+
 - **Tool**: ChatGPT 5.2 (chatgpt.com)
 - **Dates**: March 25 to April 15, 2026
 - **Scope**: MERN stack and typescript, jwt, image uploading, api
 - **Use**: Help with getting stack setup, learning and using typescript, and using other libraries such as jwt and aws. General debugging, code generation, and endpoint explanation for api
+
 
 All AI-generated code was reviewed, tested, and modified to meet
 assignment requirements. Final implementation reflects my understanding
