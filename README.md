@@ -126,4 +126,6 @@ This project used AI tools to assist with development and debugging throughout t
 
 **GitHub Copilot** was used during development for code suggestions, autocompletion, and identifying potential bugs inline while writing code in the editor.
 
-Both tools were used to accelerate development and improve code quality, with all suggestions reviewed and tested by the team before being merged.
+All AI-generated code was reviewed, tested, and modified to meet
+assignment requirements. Final implementation reflects my understanding
+of the concepts.
