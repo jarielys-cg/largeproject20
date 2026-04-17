@@ -160,6 +160,12 @@ This project used AI tools to assist with development and debugging throughout t
 - **Scope**: Fix Duplicate Businesses Bug
 - **Use**: Help with preventing duplicate businesses from appearing in the dashboard
 
+- **Tool**: Claude Sonnet (Anthropic)
+- **Dates**: March 24 to April 13, 2026
+- **Scope**: Frontend components
+- **Use**: Used to generate, debug, and refine frontend code. Specific areas include business dashboard, review system, search functionality, and modal components
+###
+
 All AI-generated code was reviewed, tested, and modified to meet
 assignment requirements. Final implementation reflects my understanding
 of the concepts.
