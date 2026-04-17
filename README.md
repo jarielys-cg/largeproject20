@@ -129,25 +129,36 @@ This project used AI tools to assist with development and debugging throughout t
 - **Dates**: April 15, 2026
 - **Scope**: Updating and debugging email verification feature in the mobile application
 - **Use**: Help with debugging and implementation in the mobile application
-
+###
 
 - **Tool**: Claude (Anthropic)
 - **Dates**: April 13, 2026-April 15, 2026
 - **Scope**: Creating class diagram for mobile application
 - **Use**: Assistance with creating class diagram for mobile application
-
+###
 
 - **Tool**: ChatGPT 5.2 (chatgpt.com)
 - **Dates**: April 15, 2026
 - **Scope**: Implementation of buttons to edit and delete reviews
 - **Use**: Help with logic for when buttons should appear and their functions
-
+###
 
 - **Tool**: ChatGPT 5.2 (chatgpt.com)
 - **Dates**: March 25 to April 15, 2026
 - **Scope**: MERN stack and typescript, jwt, image uploading, api
 - **Use**: Help with getting stack setup, learning and using typescript, and using other libraries such as jwt and aws. General debugging, code generation, and endpoint explanation for api
+###
 
+- **Tool**: GitHub Copilot
+- **Dates**: April 15, 2026
+- **Scope**: Fix Image Uploading
+- **Use**: Help with failing image uploads, rework image upload flow, and format image URLs correctly
+###
+
+- **Tool**: GitHub Copilot
+- **Dates**: April 15, 2026
+- **Scope**: Fix Duplicate Businesses Bug
+- **Use**: Help with preventing duplicate businesses from appearing in the dashboard
 
 All AI-generated code was reviewed, tested, and modified to meet
 assignment requirements. Final implementation reflects my understanding
